@@ -1,0 +1,2419 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seekoo</title>
+  <style>
+    :root{ --bg:#0b0b0b; --text:#f2f2f2; }
+
+    /* Pretendard 폰트 불러오기 */
+/* Pretendard (OTF) */
+@font-face {
+  font-family: "Pretendard";
+  src: url("./fonts/Pretendard-Regular.otf") format("opentype");
+  font-weight: normal; font-style: normal; font-display: swap;
+}
+
+
+/* Almarai (TTF) */
+@font-face {
+  font-family: "Almarai";
+  src: url("./fonts/Almarai-Regular.ttf") format("truetype");
+  font-weight: normal; font-style: normal; font-display: swap;
+}
+
+html, body{
+  scroll-behavior: smooth;
+  margin:0; height:100%;
+  background:var(--bg); color:var(--text);
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  overflow-x:hidden;
+}
+.fade-out {
+  opacity: 0;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+    /* 부드러운 배경 전환 */
+body{
+  transition: background 0.7s ease, color 0.5s ease;
+}
+
+/* section2 (dark 상태) */
+body.to-dark{
+  background:#0b0b0b;
+  color:#f2f2f2;
+}
+
+/* section3 (light 상태) */
+body.to-light{
+  background:#ffffff;
+  color:#111;
+}
+
+/* 상단 고정 타이틀 (보색 효과) */
+h1{
+  position:fixed; inset:0 0 auto 0; width:100%;
+  margin:0; padding:1rem 2rem;
+  background:transparent;
+  font-weight:300; font-size:clamp(15px,1.0vw,36px);
+  letter-spacing:.2px; z-index:1000;
+  mix-blend-mode:difference; color:#fff;
+  border-bottom:0;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: clamp(13px,1.0vw,36px);  
+    padding: 0.7rem 1.0rem;               
+    font-weight: 300;                     
+  }
+}
+
+main{ position:relative; }
+
+/* 공통 섹션 */
+.section{
+  position:relative;
+  min-height:100vh;
+  padding-top:72px; /* 헤더 여백 */
+  box-sizing:border-box;
+  overflow:hidden;
+  transition: opacity 1s ease-in-out; /* 페이드 전환 */
+}
+
+/* 공통 등장 애니메이션 대상 */
+.reveal{
+  opacity:0;
+  transform: translateY(40px) scale(.985);
+  transition:
+    opacity .9s ease-out var(--delay,0ms),
+    transform .9s cubic-bezier(.22,1,.36,1) var(--delay,0ms);
+  will-change: opacity, transform;
+}
+
+.reveal.show{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  }
+
+
+
+/* 섹션 4 본체 */
+.section4 {
+  position: relative;
+  min-height: 100vh;
+  overflow: clip;   /* 배경 트랜스폼 클리핑 */
+}
+
+/* 배경 이미지를 ::before에 두고 크로스페이드 */
+.section4::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("./images/0551309d-4a88-4e84-b67b-b945bc2e1778.png"); /* 네 배경 경로 */
+  background-size: cover;
+  background-position: center 55%;
+  opacity: 0;
+  filter: blur(6px);
+  transform: scale(1.04) translateY(24px); /* 살짝 확대/내림 → 더 자연스러움 */
+  transition:
+    opacity 900ms ease,
+    filter 1200ms ease,
+    transform 1200ms ease;
+  will-change: opacity, filter, transform;
+}
+
+/* 진입 시 자연스러운 등장 */
+.section4.is-inview::before {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+
+/* 하단 텍스트 가독성용 그라데이션 오버레이 */
+.section4 .branding-overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 45%;
+  background: linear-gradient(transparent 0%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+}
+
+/* 접근성: 모션 줄임 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+  .section4::before {
+    transition: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+
+/* --- 💻 메인 화면 스타일 --- */
+.s1 .bubble {
+  position: absolute;
+  display: block;
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.45));
+  width: min(1200px, 92vw);
+}
+.s1 .bubble--top {
+  top: 13%;
+  left: 55%;
+  transform: translate(-50%, 0);
+  width: min(1200px, 92vw);
+}
+.s1 .bubble--small-left {
+  top: 35%;
+  left: 7%;
+  width: min(400px, 38vw);
+}
+.s1 .bubble--bottom {
+  top: 55%;
+  right: 50%;
+  width: min(1000px, 82vw);
+}
+.s1 .bubble--small-right {
+  top: 45%;
+  right: 5%;
+  width: min(400px, 36vw);
+} /* s1만
+방향감 있게 미세 슬라이드 */
+.s1 .bubble--top {
+  transform: translateY(40px);
+}
+.s1 .bubble--top.show  {
+  transform: translate(-50%, 0);
+} 
+.s1 .bubble--bottom.show{
+  transform: translate(50%, 0);
+}
+
+.pc-only { display: block; }
+.mo-only { display: none; }
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .pc-only { display: none; }
+  .mo-only { display: block; }
+}
+/* 📱 모바일(세로 화면)에서도 .s1 카드 겹치게 */
+/* === 모바일 전용 s1 레이아웃 === */
+@media (max-width: 768px) and (orientation: portrait) {
+
+  .s1{
+    background:#000;               /* 이미 검정이면 생략 */
+    color:#fff;
+    padding: 3.5rem 1.5rem 4rem;
+  }
+
+  .s1-mo{
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .s1-mo-title{
+    font-size: 14px;
+    font-weight: 300;
+    text-align: left;
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+    
+  }
+
+  .s1-mo-main{
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .s1-mo-title-2{
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+
+    font-weight: 100;
+
+  }
+
+  .s1-mo-sub{
+    font-size: 10px;
+    line-height: 1.7;
+    color:#ddd;
+    margin-bottom: 1.8rem;
+    font-weight: 500;
+
+  }
+
+  .hl-orange{
+    background: #FFD891 ;
+    padding: 0.1rem 0.2rem;
+
+    font-weight: 600;
+    color:#000000;
+
+  }
+
+  .hl-orange-box{
+    background:#FF5F46;
+    padding: 0.1rem 0.2rem;
+    color:#000000;
+    font-weight: 600;
+
+
+  }
+
+  /* 말풍선 행 */
+  /* 모바일 버블 전체 */
+.s1-mobile {
+  padding: 2rem 1.4rem;
+  text-align: center;
+}
+
+/* 글자 스타일 */
+.s1-mobile-title {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.s1-mobile-title span {
+  color: #FFDB91;
+  font-weight: 700;
+}
+
+/* 버블 이미지 묶음 */
+.s1-mobile-bubbles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;              /* 위아래 간격은 개별 margin-top으로 조절 */
+}
+
+.m-bubble {
+  width: min(360px, 82vw);  /* 기본 사이즈 */
+  height: auto;
+  display: block;
+    position: relative;    /* ← z-index가 먹도록 */
+}
+
+/* 공통: 2번째 이후는 위 버블과 살짝 겹치도록 */
+.m-bubble + .m-bubble {
+  margin-top: clamp(-18px, -3vh, -6px);
+}
+
+/* 1번 버블(흰색) – 제일 위, 약간 크게, 왼쪽으로 살짝 치우치게 */
+.m-bubble:nth-child(1) {
+  margin-top: 0;
+  width: min(170px, 86vw);      /* 크기 조절 */
+  align-self: flex-start;       /* 컨테이너 왼쪽 기준 */
+  margin-left: 10%;              /* 더 왼쪽/오른쪽 조절하고 싶으면 여기 값 바꾸면 됨 */
+}
+
+/* 2번 버블(노랑) – 조금 작게, 오른쪽으로 치우치게 */
+.m-bubble:nth-child(2) {
+  width: min(170px, 80vw);      /* 크기 조절 */
+  align-self: flex-end;         /* 오른쪽으로 붙이기 */
+  margin-right: 15%;             /* 오른쪽 여백 미세 조정 */
+  margin-top: clamp(-10px, -3vh, -8px);  /* 위 버블과 겹치는 정도 */
+   z-index: 2;        
+}
+
+/* 3번 버블(코랄) – 가운데 아래, 살짝 작게 */
+.m-bubble:nth-child(3) {
+  width: min(100px, 70vw);      /* 크기 조절 */
+  align-self: center;           /* 가운데 정렬 */
+  margin-right: 30%; 
+  margin-top: clamp(-10px, 1vh, -10px);  /* 위 버블과 거리(겹치게 하고 싶으면 음수로) */
+  z-index: 1; 
+}
+
+.s1-mobile-bubbles-2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-top: 3rem; /* 첫 번째 세트와 간격 */
+}
+
+.m-bubble-2 {
+  width: min(360px, 82vw);
+  height: auto;
+  display: block;
+  position: relative; /* z-index 사용 가능 */
+}
+
+/* 공통: 2 이후는 겹치기 */
+.m-bubble-2 + .m-bubble-2 {
+  margin-top: clamp(-18px, -3vh, -6px);
+}
+
+/* 4번 — 왼쪽 위 */
+.m-bubble-2:nth-child(1) {
+  margin-top: 0;
+  width: min(200px, 86vw);
+  align-self: flex-start;
+  margin-left: 40%;
+  z-index: 1;
+}
+
+/* 5번 — 오른쪽 위 */
+.m-bubble-2:nth-child(2) {
+  width: min(180px, 80vw);
+  align-self: flex-end;
+  margin-right: 45%;
+  margin-top: clamp(-12px, -2vh, -12px);
+  z-index: 2;
+}
+
+/* 6번 — 가운데 아래 (뒤로) */
+.m-bubble-2:nth-child(3) {
+  width: min(120px, 70vw);
+  align-self: center;
+  margin-top: clamp(0px, -2vh, 10px);
+  margin-right: -40%;     /* 위치 조절 */
+  z-index: 1;
+}
+
+}
+
+/* ===== Section 2: Research 스타일 한 장 + 텍스트 ===== */
+/* -----------------------------------------------------
+   SECTION 2 (RESEARCH)
+----------------------------------------------------- */
+.s2 {
+  position: relative;
+  background: #000;
+  color: #fff;
+  padding: 5rem 2rem 6rem;
+  overflow: hidden;
+}
+
+/* ---- 바닥 페이드아웃 (검 → 흰) ---- */
+.s2::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 280px;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0),
+    rgba(255, 255, 255, 1)
+  );
+  z-index: 1;
+}
+
+/* -----------------------------------------------------
+   텍스트 블록 공통
+----------------------------------------------------- */
+.research-text {
+  position: relative;
+  z-index: 3;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 1.7;
+  font-family: "Pretendard", sans-serif;
+}
+
+.research-text .research-p {
+  font-size: 16px;
+  margin-top: 1rem;
+  color: #ddd;
+}
+
+/* PC/모바일 분리 */
+.pc-only { display: block; }
+.mo-only { display: none; }
+
+/* -----------------------------------------------------
+   버블 이미지 공통
+----------------------------------------------------- */
+.s2 .bubble {
+  position: absolute;
+  filter: drop-shadow(0 8px 22px rgba(0,0,0,.45));
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity .9s ease-out var(--delay,0ms),
+    transform .9s cubic-bezier(.22,1,.36,1) var(--delay,0ms);
+  will-change: opacity, transform;
+}
+
+.s2 .bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* -----------------------------------------------------
+   PC 버블 위치
+----------------------------------------------------- */
+.s2 .bubble--top-left {
+  top: 16%;
+  left: 8%;
+  width: 700px;
+}
+
+.s2 .bubble--bottom-left {
+  bottom: 10%;
+  left: 40%;
+  width: 900px;
+}
+
+.s2 .bubble--top-right {
+  top: 25%;
+  right: 34%;
+  width: 550px;
+}
+
+.s2 .bubble--bottom-right {
+  bottom: 43%;
+  right: 47%;
+  width: 50px;
+}
+
+/* -----------------------------------------------------
+   MOBILE STYLES
+----------------------------------------------------- */
+@media (max-width: 768px) and (orientation: portrait) {
+
+  .pc-only { display: none; }
+  .mo-only { display: block; }
+
+  .s2 {
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  .s2-title{
+  text-align:center;
+  font-weight:700;
+  font-size:18px;
+
+}
+
+
+  .research-text {
+    max-width: 420px;
+    text-align: center;
+    line-height: 1.55;
+  }
+
+  .research-text .research-p {
+    font-size: 10px;
+  }
+
+  /* 버블 위치 수정 */
+  .s2 .bubble--top-left {
+    top: 22%;
+    left: 20%;
+    width: 300px;
+  }
+
+  .s2 .bubble--bottom-left {
+    bottom: 15%;
+    left: 20%;
+    width: 330px;
+    z-index: 4;
+  }
+
+  .s2 .bubble--top-right {
+    top: 45%;
+    right: 30%;
+    width: 250px;
+    z-index: 5;
+
+  }
+
+  .s2 .bubble--bottom-right {
+  bottom: 43%;
+  right: 47%;
+  width: 0px;
+}
+
+
+}
+
+/* ===== Section 3: 3장 갤러리 + 그라데이션 배경 ===== */
+
+.section3 {
+  position: relative;
+}
+
+/* 섹션 타이틀 */
+.s3 .s3-title{
+  text-align:center;
+  font-weight:700;
+  font-size:23px;
+  margin: 1.2rem 0 3.0rem;
+}
+
+.section3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.3));
+}
+
+/* 가운데 3장 배치 */
+.s3 .gallery{
+  max-width:min(1500px, 100vw);
+  margin: 0 auto;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(10px, 1vw, 15px);
+  align-items:center;
+}
+
+/* 카드(이미지) 공통 */
+.s3 .card{
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+  aspect-ratio: 5.5 / 5.9;              /* 비율 고정 */
+}
+
+/* 이미지 */
+.s3 .card img{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+  filter: grayscale(100%);          /* 샘플처럼 흑백 느낌 */
+}
+
+/* 카드 하단 텍스트 라벨 */
+.s3 .label {
+  position: absolute;
+  font-family: "Almarai";
+  
+  left: 50%;
+  transform: translateX(-50%);
+
+  bottom: -10px;
+  font-weight: 500;
+  letter-spacing: 0em;
+  font-size: clamp(30px, 5vw, 60px);
+  color: #fff;
+  pointer-events: none;
+}
+
+/* 설명 문단 */
+.s3 .desc{
+  max-width:min(960px, 92vw);
+  margin: clamp(16px, 3vh, 28px) auto 0;
+  text-align:center;
+  line-height:1.6;
+  font-size:clamp(12px, 1.05vw, 16px);
+  color:#333;
+  padding-top: 20px;
+
+}
+
+.s3 .desc.pc-only { display: block; }
+.s3 .desc.mo-only { display: none; }
+
+/* 📱 모바일(세로 화면)일 때만 section3 이미지·label 보정 */
+@media (max-width: 768px) and (orientation: portrait) {
+  .s3 {
+    padding-top: 0;
+  }
+
+  .s3 .gallery{
+    max-width:min(1500px, 100vw);
+    margin: 0 auto;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(10px, 1vw, 15px);
+    align-items:center;
+  }
+
+  .s3 .card{
+    position:relative;
+    border-radius:0px;
+    overflow:hidden;
+    aspect-ratio: 5.5 / 5.9;
+  }
+
+  .s3 .card img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+    filter: grayscale(100%);
+  }
+
+  .s3 .label {
+    left: 50%;
+    transform: translate(-50%, -0.2vh);
+    font-size: clamp(40px, 5vw, 60px);
+    letter-spacing: .00em;
+  }
+
+  .s3 .desc.pc-only { display: none; }
+  .s3 .desc.mo-only { display: block; }
+
+  .s3 .desc {
+    margin: 16px 5vh 0;
+  font-size:clamp(9px, 1.05vw, 16px);
+
+    
+  }
+}
+
+.s4 {
+  position: relative;
+  min-height: 100vh;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.branding-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* 로고 + 문장 전체 박스 */
+.s4-inner{
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.s4-title{
+  text-align: center;
+}
+
+/* 한 줄(문단) 스타일 */
+.branding-line{
+  margin: 0;
+  font-size: clamp(14px, 1.0vw, 18px);
+  line-height: 1.6;
+  color: #000;
+}
+
+/* 문장 안에 들어가는 로고 이미지 */
+.inline-logo{
+  height: 0em;              /* 텍스트 높이에 맞추기 */
+  vertical-align: middle;     /* 글자랑 수직 가운데 정렬 */
+  margin-right: 0em;        /* 로고와 글자 사이 간격 */
+}
+
+/* PC/모바일 토글 */
+.pc-only { display: block; }
+.mo-only { display: none; }
+
+@media (max-width: 768px) {
+  .branding-line{
+    font-size: 0.9rem;
+  }
+
+  .inline-logo{
+    height: 1.3em;
+  }
+
+  .pc-only { display: none; }
+  .mo-only { display: block; }
+
+  .branding-line{
+  margin: 0;
+  font-size: clamp(10px, 1.0vw, 18px);
+  line-height: 1.6;
+  color: #000;
+}
+
+/* 문장 안에 들어가는 로고 이미지 */
+.inline-logo{
+  height: 1.4em;              /* 텍스트 높이에 맞추기 */
+  vertical-align: middle;     /* 글자랑 수직 가운데 정렬 */
+  margin-right: 0.3em;        /* 로고와 글자 사이 간격 */
+}
+}
+
+
+
+/*section5*/
+/* 1) 좌/중앙/우 비율: 로고 영역을 더 넓게 */
+/* 섹션5 기본 */
+.section5 {
+  position: relative;
+  background: #fff;
+  color: #111;
+  padding: 6rem 4rem;
+}
+
+.s5-inner { max-width: 1200px; margin: 0 auto; }
+
+/* 2단: 왼쪽(콘텐츠) / 오른쪽(팔레트) */
+.s5-grid {
+  display: grid;
+  grid-template-columns: 1.0fr 1.4fr; /* 비율 조정 */
+  gap: 2.9rem;
+  align-items: start;
+}
+
+/* --- 왼쪽 전체 --- */
+.s5-left {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+/* 로고와 가이드 겹침 */
+.s5-logo {
+  position: relative;
+  width: 250%;
+  max-width: 1000px;
+  z-index: 2;
+
+  transform: translateX(-15px) translateY(15px) scale(0.937);
+  transform-origin: center center;
+}
+.s5-logo img {
+  width: 200%;
+  max-width: 800px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.s5-logo-guide {
+  position: relative;
+  inset: 0;
+  z-index: 1;
+  opacity: 1;
+  transform: translateX(-16px) translateY(20px) scale(1.383);
+
+}
+.s5-logo-guide img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* focus 개별 조정 */
+.s5-focus {
+  transform: translateX(0px) translateY(5px) scale(1);
+  transform-origin: center center;
+}
+
+/* roll 개별 조정 */
+.s5-roll {
+  transform: translateX(50px) translateY(-25px) scale(1);
+  transform-origin: center center;
+}
+
+/* focus & roll 수직 정렬 */
+.s5-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  transform: translateX(264px) translateY(20px) scale(0.8);
+  
+}
+.s5-center img {
+  width: min(600px, 90%);
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* --- 오른쪽 팔레트 --- */
+.s5-palette {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 120%;
+  max-width: 700px;
+  height: 700px;
+}
+.swatch { position: relative; display: block; width: 100%; }
+.swatch-coral { background: #FF5F46; height: 59.1%; }
+.swatch-sand  { background: #FFDB91; height: 22.7%; }
+.swatch-black { background: #000;    height: 18.2%; }
+
+.hex {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  font-size: 1rem;
+  color: rgba(255,255,255,.9);
+}
+
+/* 등장 애니메이션(자연스러움 유지, 과하지 않게) */
+.section5 .s5-grid > * {
+  opacity: 0; 
+  transition: opacity .8s ease, transform .8s ease;
+}
+.section5.is-inview .s5-grid > * { opacity: 1;  }
+
+@media (max-width: 768px){
+
+  .section5{
+    padding: 4rem 1.5rem;
+    min-height: auto;
+  }
+
+  /* 한 컬럼(로고 위 / 팔레트 아래) */
+  .s5-grid{
+    grid-template-columns: 1fr;
+    gap: 0rem;
+  }
+
+  .s5-left{
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  /* 로고 쪽 */
+  .s5-logo{
+    max-width: 100%;
+    transform: scale(0.5);
+  }
+  .s5-logo img{
+    width: 100%;
+    max-width: 100%;
+  }
+  .s5-logo-guide{
+    transform: scale(1.25);
+  }
+
+  /* focus/roll 원본은 모바일에서 숨김 */
+  .s5-center{
+    display: none;
+  }
+
+  /* ✅ 팔레트를 화면 오른쪽으로 붙이기 */
+  .s5-palette{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 260px;         /* 팔레트 실제 폭 */
+    margin: 0 0 2.5rem auto;  /* 오른쪽 정렬 (left: auto, right:0 느낌) */
+    height: auto;
+  }
+
+  .swatch{
+    position: relative;
+    width: 100%;
+    display: block;
+  }
+
+  /* 세로 비율 */
+  .swatch-coral{
+    background: #FF5F46;
+    padding-top: 120%;
+  }
+  .swatch-sand{
+    background: #FFDB91;
+    padding-top: 90%;
+  }
+  .swatch-black{
+    background: #000;
+    padding-top: 30%;
+  }
+
+  .hex{
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,.9);
+  }
+
+  /* ✅ 코랄 끝 경계선 바로 왼쪽에 Focus */
+  .swatch-coral::after{
+    content: "";
+    position: absolute;
+    top: 100%;                 /* coral/sand 경계선 */
+    left: -50%;                /* 팔레트 폭의 65%만큼 왼쪽으로 */
+    transform: translateY(-70%) scale(70%);
+    width: 60%;                /* 글자 폭 */
+    height: 24%;
+    background: url("images/Background/focus.png") no-repeat right center;
+    background-size: contain;
+    pointer-events: none;
+  }
+
+  /* ✅ 샌드 끝 경계선 바로 왼쪽에 Roll */
+  .swatch-sand::after{
+    content: "";
+    position: absolute;
+    top: 100%;                 /* sand/black 경계선 */
+    left: -75%;
+    transform: translateY(-75%) scale(150%) ;
+    width: 60%;
+    height: 24%;
+    background: url("images/Background/roll.png") no-repeat right center;
+    background-size: contain;
+    pointer-events: none;
+  }
+}
+
+
+
+/* 작은 화면 대응 */
+@media (max-width: 840px){
+  .s3 .gallery{ grid-template-columns: 1fr; }
+  .s3 .card{ aspect-ratio: 16 / 10; }
+}
+
+    /* ===== Section 3~12: 비워두되 동일 인터랙션 적용할 수 있는 틀 ===== */
+    .placeholder{
+      position:absolute; left:50%; top:50%;
+      transform:translate(-50%,-50%);
+      width:min(1000px, 90vw);
+      border:1px dashed rgba(255,255,255,.15);
+      color:#aaa; text-align:center; padding:3rem 1rem;
+      border-radius:14px;
+      font-size:clamp(14px,1.2vw,20px);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .reveal{ transition:none !important; opacity:1 !important; transform:none !important; }
+    }
+
+    /* 섹션6 기본 스타일 */
+.section6{
+  background:#fff; color:#111; padding:6rem 2rem;
+  --focus-x:-430px; --focus-y:-150px;  --focus-scale:1;
+  --roll-x:-200px;  --roll-y:250px;   --roll-scale:1;
+  --logo-x:593px;   --logo-y:-20px;   --logo-scale:1;
+}
+
+.s6-inner{ max-width:1200px; margin:0 auto; text-align:center; }
+
+/* 타이틀 */
+.s6-title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.5rem;
+  margin-bottom:1.5rem;
+}
+.s6-title img{
+  width: min(180px, 40%);
+  height:auto;
+  display:block;
+  transform: translateX(65px) translateY(-50px) scale(0.4);
+
+}
+.s6-title span{
+  font-size: clamp(16px, 1.4vw, 30px);
+  font-weight:600;
+  letter-spacing:0.02em;
+
+  transform: translateX(-15px) translateY(-47px) scale(0.7);
+
+}
+
+/* 제품 무대 */
+.s6-stage{
+  position:relative;
+  min-height:520px;
+}
+.s6-product{
+  width:min(920px, 92%);
+  display:block; margin:0 auto;
+  pointer-events:none;
+
+  transform:  scale(1.7);
+
+}
+
+/* 라벨 */
+.s6-label{
+  position:absolute; top:30%; left:30%;
+  transform-origin:center center;
+  user-select:none;
+}
+.s6-label.focus{ transform: translate(var(--focus-x), var(--focus-y)) scale(var(--focus-scale)); }
+.s6-label.roll { transform: translate(var(--roll-x),  var(--roll-y))  scale(var(--roll-scale)); }
+.s6-label.logo { transform: translate(var(--logo-x),  var(--logo-y))  scale(var(--logo-scale)); }
+
+.s6-footnote{
+  margin-top:10rem;
+  font-size:clamp(12px,1vw,14px);
+  color:#7a7a7a;
+  transform:  translateX(40px)
+
+}
+
+@media (max-width: 768px){
+  .s6-footnote{
+    transform: none;
+  }
+}
+
+/* 반응형(좁은 화면일수록 전체 스케일 살짝 줄임) */
+@media (max-width: 900px){
+  .section6{ --focus-x:-200px; --roll-x:-110px; --logo-x:240px; }
+  .s6-stage{ min-height:460px; }
+  .s6-product{ width:min(820px, 96%); }
+}
+@media (max-width: 640px){
+  .section6{ --focus-scale:.9; --roll-scale:.9; --logo-scale:.9; min-height: auto; }
+  .s6-stage{ min-height:400px; }
+  .s6-title img {
+    transform: translateX(35px) translateY(-20px) scale(0.4);
+  }
+  .s6-title span {
+    font-size: clamp(25px, 1.4vw, 30px);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transform: translateX(-26px) translateY(-18px) scale(0.7);
+  }
+  .s6-label.focus {
+    transform: translate(-100%, -500%);
+  }
+  .s6-label {
+    max-height: 3vh;
+  }
+  .s6-label.roll {
+    transform: translate(-100%, 200%) scale(2);
+  }
+  .s6-label.logo {
+    transform: translate(170%, -430%) scale(1.5);
+  }
+  .s6-footnote {
+    margin-top: -30%;
+  }
+}
+
+
+/* ===== Section 7 ===== */
+.s7 .s7-title{
+  text-align:center;
+  font-weight:700;
+  font-size:clamp(18px, 1.6vw, 28px);
+}
+
+.branding-line{
+  margin: 0;
+  font-size: clamp(10px, 1.0vw, 18px);
+  line-height: 1.6;
+  color: #000;
+}
+
+/* 문장 안에 들어가는 로고 이미지 */
+.inline-logo{
+  height: 1.0em;              /* 텍스트 높이에 맞추기 */
+  vertical-align: middle;     /* 글자랑 수직 가운데 정렬 */
+  margin-right: 0.3em;        /* 로고와 글자 사이 간격 */
+}
+
+.inline-logo-main{
+  height: 1.0em;              /* 텍스트 높이에 맞추기 */
+  vertical-align: middle;     /* 글자랑 수직 가운데 정렬 */
+  margin-left: 0.3em;        /* 로고와 글자 사이 간격 */
+  transform: translateY( -2px);
+}
+
+.section7::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.3));
+}
+
+/* 가운데 3장 배치 (PC 기준) */
+.s7 .s7-gallery {
+  max-width: min(1500px, 100vw);
+  margin: 3rem auto 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(10px, 1vw, 50px);
+  align-items: center;
+}
+
+.s7 .s7-card{
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+  aspect-ratio: 7 / 8.5;
+}
+
+.s7 .s7-card img{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.s7 .s7-desc{
+  max-width:min(960px, 92vw);
+  margin: clamp(16px, 10vh, 50px) auto 0;
+  text-align:center;
+  line-height:1.6;
+  font-size:clamp(12px, 1.05vw, 16px);
+  color:#333;
+}
+
+/* 공통: PC/모바일 전환용 */
+.pc-only { display: block; }
+.mo-only { display: none; }
+
+/* ---------- 반응형 ---------- */
+@media (max-width: 980px){
+  .s7 .s7-gallery{ grid-template-columns: 1fr 1fr; }
+}
+
+/* 📱 모바일 레이아웃 (네가 올린 이미지 구조) */
+@media (max-width: 640px){
+
+  .s7 { 
+    padding: 5rem 1.2rem 3rem; 
+    min-height: auto;
+  }
+
+  /* 갤러리: 2열 2행, 카드1이 왼쪽을 전부 차지 */
+  .s7 .s7-gallery{
+    max-width: 100%;
+    margin: 2rem auto 1.5rem;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;   /* 왼쪽이 조금 더 넓게 */
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  /* 첫 번째 카드: 왼쪽 전체(2행 span) */
+  .s7 .s7-card:nth-child(1){
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+    aspect-ratio: auto;       /* 높이 자동으로 맞추기 */
+  }
+
+  /* 두 번째 카드: 오른쪽 위 */
+  .s7 .s7-card:nth-child(2){
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    aspect-ratio: auto;
+  }
+
+  /* 세 번째 카드: 오른쪽 아래 */
+  .s7 .s7-card:nth-child(3){
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    aspect-ratio: auto;
+  }
+
+  .s7 .s7-desc {
+    margin: 1.5rem 6px 0;
+    font-size: 10px;
+  }
+
+  /* 텍스트: 모바일용만 보이게 */
+  .pc-only { display: none; }
+  .mo-only { display: block; }
+}
+
+
+.s8 {
+  position: relative;
+  min-height: 100vh;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  /* 배경 이미지 설정 */
+  background-image: url("./images/section8.png"); /* 네 파일 경로 */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  /* 자연스러운 전환 효과 */
+  transition: background 3s ease;
+}
+@media (max-width: 640px){
+  .s8{
+    min-height: 30vh
+  }
+}
+.s9 {
+  position: relative;
+  min-height: 100vh;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  /* 배경 이미지 설정 */
+  background-image: url("./images/section9.png"); /* 네 파일 경로 */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  /* 자연스러운 전환 효과 */
+  transition: background 3s ease;
+}
+@media (max-width: 640px){
+  .s9{
+    min-height: 30vh
+  }
+}
+.s10 {
+  position: relative;
+  min-height: 100vh;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  /* 배경 이미지 설정 */
+  background-image: url("./images/section10.png"); /* 네 파일 경로 */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  /* 자연스러운 전환 효과 */
+  transition: background 3s ease;
+}
+@media (max-width: 640px){
+  .s10{
+    min-height: 30vh
+  }
+}
+
+/* 섹션 래퍼 */
+.s11 {
+  position: relative;
+  width: 100vw;
+  height: 100vh;         /* 화면 전체 높이 */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.s11-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.s11-image-grid,
+.s11-mask-grid {
+  position: absolute;
+  inset: 0;                  /* 화면 전체 채움 */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.s11-image-grid figure {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.s11-image-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.s11-mask-grid .mask {
+  background: #000;
+  opacity: 0.92;
+  transition: opacity 0.25s ease;
+  pointer-events: auto; /* 호버 감지 */
+}
+
+.s11-mask-grid .mask:hover {
+  opacity: 0;
+}
+/* ⬇️ 추가 전용: 풀블리드 */
+.section.s11{
+  background:#000; color:#fff;
+  padding:0; margin:0;
+  width:100vw; height:100vh;  /* 화면 전체 */
+  overflow:hidden;
+}
+
+.section.s11 .s11-stage{
+  position:relative;
+  width:100%; height:100%;
+  border-radius:0; overflow:hidden;
+}
+
+/* 그리드 채우기 동일 */
+.section.s11 .s11-stage > .s11-image-grid,
+.section.s11 .s11-stage > .s11-mask-grid{
+  position:absolute; inset:0;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:repeat(5,1fr);
+  gap:0; width:100%; height:100%;
+}
+.section.s11 .s11-image-grid figure{ margin:0; overflow:hidden; }
+.section.s11 .s11-image-grid img{ width:100%; height:100%; object-fit:cover; display:block; }
+.section.s11 .s11-mask-grid .mask{ background:#000; opacity:1; transition:opacity .25s ease; pointer-events:auto; }
+.section.s11 .s11-mask-grid .mask:hover{ opacity:0; }
+
+@media (max-width: 640px){
+  .s11 {
+  min-height: 30vh;
+  height: 30vh !important;  
+  }
+  .section.s11 .s11-mask-grid .mask {
+    background: #000;
+    opacity: 1;
+    transition: opacity .25s ease;
+    pointer-events: auto;
+  }
+}
+/* ===== Section 12 ===== */
+.s12 {
+  background: #fff;
+  color: #111;
+  padding: 6rem 2rem;
+  font-weight: 400;
+  font-size: 30px;
+  
+
+}
+
+.s12-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr; /* 좌:텍스트, 우:사진 */
+  gap: 50px;
+  align-items: start;
+}
+
+/* 왼쪽 컬럼 */
+.s12-left {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto; /* 상로고 / 메타 / 팀 / 하로고 */
+  gap: 1.8rem;
+  text-align: left;               /* 전체 텍스트 왼쪽 정렬 */
+  transform: translateX(-150px);   /* 왼쪽 전체 정렬 기준 통일 */
+}
+
+.s12-logo-top img {
+  width: min(320px, 80%);
+  height: auto;
+  display: block;
+  transform: translateX(70px)translateY(-20px)scale(1.7);          /* 위치 이동은 빼고 크기만 유지 */
+}
+
+.s12-meta {
+  font-size: 19px;
+  line-height: 1.5;
+  color: #333;
+  margin-left: 5px;               /* 로고 정렬선 미세 보정 */
+  margin-top: -10px;
+}
+
+.s12-team h3 {
+  margin: 2.4rem 0 0.4rem;
+  font-size: 23px;
+  font-family: "Almarai", "Pretendard", sans-serif; 
+  font-weight: 700;
+
+
+}
+
+.s12-team ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.6rem;
+  font-weight: 700;
+
+}
+
+.s12-team li {
+  font-size: 20px;
+  line-height: 1.6;
+  font-weight: 400;
+
+}
+
+.s12-logo-bottom {
+  margin-top: 1rem;
+
+}
+
+.s12-logo-bottom img {
+  width: 64px;
+  height: auto;
+  display: block;
+  opacity: 0.9;
+  transform: translateX(-20px)translateY(20px)scale(1.7);          /* 위치 이동은 빼고 크기만 유지 */
+
+}
+
+/* 오른쪽 사진 */
+.s12-photo {
+  margin: 0;
+  overflow: hidden;
+  transform: translateX(90px) translateY(70px) scale(1.4);
+}
+
+.s12-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.scroll-indicator {
+  position: fixed;
+  bottom: 30px;
+  right: 50px;
+  width: 70px;
+  z-index: 10;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+/* 기본 어두운 배경(밝은 아이콘) */
+.scroll-indicator img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: invert(1); /* 흰색 */
+  transition: filter 0.3s ease;
+}
+
+/* 배경이 밝을 때 → 검정색으로 반전 제거 */
+.scroll-indicator.light img {
+  filter: invert(0);
+}
+
+/* <= 960px : 한 컬럼 + 텍스트/로고만 왼쪽 여백, 사진은 맨 아래로 */
+@media (max-width: 960px){
+  .s12{
+    padding: 0;                 /* 양옆 여백은 왼쪽 그룹에만 줄 거라 0 */
+    position: relative;
+    min-height: auto;
+    gap: 0;
+    transform: none;
+    margin-top: 20%;
+    max-height: 950px;          /* 필요 없으면 none 으로 바꿔도 됨 */
+      background: #fff;
+  color: #111;
+  font-weight: 400;
+  font-size: 30px;
+  
+  }
+
+  .s12-meta{
+    font-size: 10px;
+    margin-top: -15%;
+  }
+
+  .s12-team h3{
+    font-size: 12px;
+      margin-top: 5%;
+  }
+
+  .s12-team li{
+    font-size: 10px;
+      margin-top: 0%;
+  }
+
+
+
+
+  .s12-inner{
+    display: flex;
+    flex-direction: column;     /* 위: 텍스트, 아래: 사진 */
+    align-items: flex-start;
+    justify-content: flex-start;
+    grid-template-columns: 1fr; /* grid 값은 무시되지만 그대로 둬도 무방 */
+    min-height: auto;
+  }
+
+  .s12-left{
+    margin-left: 1rem;        /* ← 원하는 만큼 조절 */
+    width: auto;
+    transform: none;            /* 640px 이하에서 다시 덮어씀 */
+  }
+
+  .s12-logo-top img{
+    width: min(280px, 60%);
+    transform: translateX(-10%) translateY(-20px) scale(1.2);
+  }
+
+  .s12-logo-bottom img {
+  width: 64px;
+  height: auto;
+  display: block;
+  opacity: 0.9;
+  transform: translateX(-60%)scale(1.0);          /* 위치 이동은 빼고 크기만 유지 */
+
+}
+
+  .s12-photo{
+    order: 2;                   /* 텍스트보다 항상 아래 */
+    transform: none;
+    margin-top: 2rem;           /* 텍스트와 간격 */
+  }
+
+  /* 스크롤 인디케이터 (기존 내용 유지) */
+  #pageTitle{
+    transition: opacity .35s ease, transform .35s ease, filter .35s ease;
+    will-change: opacity, transform, filter;
+  }
+  #pageTitle.is-swapping{
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(2px);
+  }
+  .scroll-indicator img {
+    width: 70%;
+    transform: translateX(5vh);
+  }
+}
+
+
+
+
+  </style>
+</head>
+<body>
+  <h1 id="pageTitle">Background</h1>
+
+  <main id="main">
+
+    <div class="scroll-indicator">
+      <div class="custom-cursor" id="customCursor" aria-hidden="true"></div>
+
+        <img src="images/seekoo_image/seekoo_pentagon.png" alt="Scroll down indicator">
+    </div>
+
+
+  <section class="section s1" data-title="Background">
+
+  <!-- ✅ 기존 PC 레이아웃 전체를 여기 안으로 옮기기 -->
+  <div class="s1-pc pc-only">
+    <img class="bubble bubble--top reveal js-reveal"
+           src="images/Background/bg_1.png" alt="상단 말풍선" style="--delay:0ms;">
+      <img class="bubble bubble--small-left reveal js-reveal"
+           src="images/Background/bg_2.png" alt="작은 좌측 말풍선" style="--delay:150ms;">
+      <img class="bubble bubble--bottom reveal js-reveal"
+           src="images/Background/bg_3.png" alt="하단 말풍선" style="--delay:0ms;">
+      <img class="bubble bubble--small-right reveal js-reveal"
+           src="images/Background/bg_4.png" alt="작은 우측 말풍선" style="--delay:200ms;">
+  </div>
+
+  <!-- ✅ 모바일 전용 레이아웃 -->
+  <div class="s1-mo mo-only">
+
+    <p class="s1-mo-main">
+      <br><br>아이들은 <span class="hl-orange">환경 문제의 근본적인 원인</span>이나<br>
+      <span class="hl-orange">복잡한 해결책</span>에 대한 이해에 어려움
+    </p>
+
+    <p class="s1-mo-sub">
+      오염을 단순히 ‘길에 쓰레기를 버리는 행위’로만 이해하는 경향이 있으며,<br>
+      ‘산업 생산, 에너지 소비’와 같은 복합적 문제에 대한 이해에 어려움을 겪고 있습니다.<br><br>
+      또한 자신의 일상 행동이 환경에 미치는 광범위한 영향을 연결 짓기 어려워하고 있습니다.
+    </p>
+
+    <!-- 1번째 버블 세트 -->
+    <div class="s1-mobile-bubbles">
+      <img src="images/section1/1.png" class="m-bubble">
+      <img src="images/section1/2.png" class="m-bubble">
+      <img src="images/section1/3.png" class="m-bubble">
+    </div>
+
+    <h3 class="s1-mo-title-2">
+      <br><br><br>환경 문제에 대한 아이들의 <span class="hl-orange-box">‘인식 - 행동 격차’</span> 발생
+    </h3>
+
+    <p class="s1-mo-sub">
+      <br>실제 행동으로 옮기는 데에는 부족함이 발생하며,<br>
+      인식·행동 격차라는 문제가 나타나고 있습니다.<br>
+      이는 행동에 기억할 수 있는 경험이 부족하거나,
+      환경 인프라의 부족,<br> 혹은 공동체의 부재 등 여러 요인에서 비롯되고 있습니다.<br><br>
+      따라서 환경 교육은 단순히 지식 전달을 넘어,<br>
+      학생들이 경험 중심의 의무적/자발적 프로그램에 참여하고,<br>
+      구체적인 행동을 실천하도록 돕는데 초점을 맞춰야합니다.
+    </p>
+
+
+    <!-- 2번째 버블 세트 -->
+    <div class="s1-mobile-bubbles-2">
+  <img src="images/section1/4.png" class="m-bubble-2">
+  <img src="images/section1/5.png" class="m-bubble-2">
+  <img src="images/section1/6.png" class="m-bubble-2">
+</div>
+
+</section>
+
+
+<section class="section s2">
+  <img
+    class="bubble bubble--top-left reveal js-reveal"
+    src="images/Background/bg_21.png"
+    alt="_21"
+    style="--delay:0ms;"
+  />
+
+  <img
+    class="bubble bubble--bottom-left reveal js-reveal"
+    src="images/Background/bg_23.png"
+    alt="_23"
+    style="--delay:300ms;"
+  />
+
+  <img
+    class="bubble bubble--top-right reveal js-reveal"
+    src="images/Background/bg_22.png"
+    alt="_22"
+    style="--delay:200ms;"
+  />
+
+  <img
+    class="bubble bubble--bottom-right reveal js-reveal"
+    src="images/Background/bg_24.png"
+    alt="_24"
+    style="--delay:400ms;"
+  />
+
+  <!-- 텍스트 블록 -->
+  <div class="research-text reveal js-reveal" style="--delay:500ms;">
+
+    <!-- PC용 텍스트 -->
+    <p class="research-p pc-only">
+      아이들이 환경 문제의 심각성(93%)은 인지하지만, 부족한 야외 활동과 체험 기회로 인해 인식과 실천 사이의 격차가 발생하고 있습니다.<br><br>
+      따라서 환경을 놀이처럼 체감하고, 능동적인 실천 감각을 키울 수 있는 새로운 형태의 교육 변화가 필요하다는 것을 발견했습니다.
+    </p>
+
+    <!-- 모바일용 텍스트 -->
+
+    <h2 class="s2-title reveal js-reveal mo-only" style="--delay:0ms;">From Awareness to Action</h2>
+
+    <p class="research-p mo-only">
+      아이들이 환경 문제의 심각성(93%)은 인지하지만,<br>
+부족한 야외 활동과 체험 기회로 인해 인식과 실천 사이의 격차가 발생하고 있습니다.<br><br>
+
+따라서 환경을 놀이처럼 체감하고 <br>
+능동적인 실천 감각을 키울 수 있는 새로운 형태의 교육 변화가 필요하다는 것을 발견했습니다.
+    </p>
+
+  </div>
+</section>
+
+
+<section class="section s3" data-title="Motive">
+  <h2 class="s3-title reveal js-reveal" style="--delay:0ms;"><br><br>Motive of SEEKOO</h2>
+
+  <div class="gallery">
+    <div class="card reveal js-reveal" style="--delay:120ms;">
+      <img src="images/Background/bg_31.png" alt="SOLAR 이미지">
+      <div class="label">SOLAR</div>
+    </div>
+
+    <div class="card reveal js-reveal" style="--delay:160ms;">
+      <img src="images/Background/bg_32.png" alt="MOTION 이미지">
+      <div class="label">MOTION</div>
+    </div>
+
+    <div class="card reveal js-reveal" style="--delay:200ms;">
+      <img src="images/Background/bg_33.png" alt="SWITCH 이미지">
+      <div class="label">SWITCH</div>
+    </div>
+  </div>
+
+  <!-- PC용 문단 -->
+  <p class="desc pc-only reveal js-reveal" style="--delay:260ms;">
+    아이들은 <strong><span style="color:#FFD891;">자연을 관찰</span></strong>하며 태양 에너지를 모으고,
+    다양한 <strong><span style="color:#FF5F46;">놀이 활동의 움직임</span></strong>을 통해
+    운동 에너지를 직접 만들어냅니다.<br><br>
+    외부에서 생성된 에너지를 실내로 가져오면, <br>
+    아이들은 본체의 움직임을 활용해 두 에너지를 사용하고 탐험의 경험을 확장하게 됩니다.
+  </p>
+
+  <!-- 모바일용 문단 (문구 마음대로 수정해도 됨) -->
+  <p class="desc mo-only reveal js-reveal" style="--delay:260ms;">
+    아이들은 <strong><span style="color:#FFD891;">자연을 관찰</span></strong> 태양 에너지를 모으고,<br>
+    다양한 <strong><span style="color:#FF5F46;">놀이 활동의 움직임</span></strong>을 통해 운동 에너지를 만들어냅니다.<br><br>
+    외부에서 생성된 에너지를 실내로 가져오면, <br>
+    아이들은 본체의 움직임을 활용해 두 에너지를 사용하고 탐험의 경험을 확장하게 됩니다.
+  </p>
+</section>
+
+
+
+<section class="section s4" data-title="Brading">
+  <div class="branding-container">
+    <picture>
+      <source srcset="images/branding_image.png" media="(max-width: 768px)">
+      <img src="images/Background/background.png"
+           alt="Seekoo Branding Background"
+           class="branding-bg">
+    </picture>
+
+    <div class="s4-inner">
+  <div class="s4-title">
+    <!-- PC용 문단 -->
+    <p class="branding-line pc-only">
+      <img src="images/main_logo.png" alt="Seekoo 로고" class="inline-logo">
+      는 에너지를 ‘직접 만드는’ 신체놀이로 아이들을 자연 속 ‘탐험가’로 이끌어냅니다.<br>
+      스스로 에너지를 발견하고 만들면서,<br>
+      환경의 소중함을 체험하고 지속가능한 성장을 이루어갑니다.
+    </p>
+
+    <!-- 모바일용 문단 -->
+    <p class="branding-line mo-only">
+      <img src="images/main_logo.png" alt="Seekoo 로고" class="inline-logo">
+      는 에너지를 '직접 만드는' 신체놀이로 아이들을 자연 속 '탐험가'로 이끌어냅니다.<br>
+      스스로 에너지를 발견하고 만들면서,<br>
+      환경의 소중함을 체험하고 지속가능한 성장을 이루어갑니다.
+
+    </p>
+  </div>
+</div>
+  </div>
+</section>
+
+
+
+<section class="section section5" data-title="Logo Design">
+  <div class="s5-inner">
+    <div class="s5-grid">
+      
+      <!-- 왼쪽 영역 -->
+      <div class="s5-left">
+
+        <!-- 로고 가이드 -->
+        <figure class="s5-logo-guide">
+          <img src="images/Background/logo_design.png" alt="로고 가이드">
+        </figure>
+
+        <!-- PC 전용 focus/roll (모바일에서는 숨김) -->
+        <div class="s5-center">
+          <figure class="s5-focus">
+            <img src="images/Background/focus.png" alt="Focus">
+          </figure>
+          <figure class="s5-roll">
+            <img src="images/Background/roll.png" alt="Roll">
+          </figure>
+        </div>
+      </div>
+
+      <!-- 팔레트 -->
+      <aside class="s5-palette" aria-label="Brand Color Palette">
+        <div class="swatch swatch-coral"><span class="hex">#FF5F46</span></div>
+        <div class="swatch swatch-sand"><span class="hex">#FFDB91</span></div>
+        <div class="swatch swatch-black"><span class="hex">#000000</span></div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section section6" data-title="Product Series">
+  <div class="s6-inner">
+    <div class="s6-title">
+      <img src="images/main_logo.png" alt="Seekoo 로고">
+      <span>Product Series</span>
+    </div>
+
+    <div class="s6-stage">
+      <img class="s6-product" src="images/section6/product.png" alt="Product">
+
+      <img id="link-solar" class="s6-label focus" src="images/section6/focus_label.png" alt="Focus" style="cursor: pointer;">
+      <img id="link-roll" class="s6-label roll"  src="images/section6/roll_label.png"   alt="Ro.ll" style="cursor: pointer;">
+      <img id="link-logo" class="s6-label logo"  src="images/section6/logo_label.png"  alt="Seekoo" style="cursor: pointer;">
+    </div>
+
+    <p class="s6-footnote">제품을 클릭하면 제품 상세 설명으로 넘어갑니다.</p>
+  </div>
+</section>
+</section>
+
+
+
+    <section class="section s7" data-title="Expectation" >
+  <div class="s7-inner">
+    <h2 class="s7-title reveal js-reveal">Expectation effect of       <img src="images/main_logo.png" alt="Seekoo 로고" class="inline-logo-main">
+</h2>
+
+    <p class="s7-desc pc-only" style="--delay:120ms;">
+      <strong>Seekoo.</strong>는 놀이 기반 교육을 통해 <strong>환경 실천을 재미있는 일상 활동</strong>으로 만들고,
+      아이들의 인식·행동 격차를 해소하는 새로운 변화를 제시합니다.<br>
+      자연 탐험과 신체 활동으로 에너지를 직접 체험하며, <strong>지속가능한 삶의 가치를 내재화하는 성장의 출발점</strong>이 될 것입니다.
+    </p>
+
+      <p class="s7-desc mo-only">
+      <img src="images/main_logo.png" alt="Seekoo 로고" class="inline-logo">
+
+    는 놀이 기반 교육을 통해 <strong>환경 실천을 재미있는 일상 활동</strong>으로 만들고,<br>
+      아이들의 인식·행동 격차를 해소하는 새로운 변화를 제시합니다.<br><br>
+      자연 탐험과 신체 활동으로 에너지를 직접 체험하며,<br> <strong>지속가능한 삶의 가치를 내재화하는 성장의 출발점</strong>이 될 것입니다.
+  </p>
+
+    <div class="s7-gallery">
+      <div class="s7-card reveal js-reveal" style="--delay:160ms;">
+        <img src="images/section7/1.png" alt="Expectation image 1">
+      </div>
+      <div class="s7-card reveal js-reveal" style="--delay:200ms;">
+        <img src="images/section7/2.png" alt="Expectation image 2">
+      </div>
+      <div class="s7-card reveal js-reveal" style="--delay:240ms;">
+        <img src="images/section7/3.png" alt="Expectation image 3">
+      </div>
+    </div>
+  </div>
+</section>
+    <section class="section s8" data-title="Product Series"></section>
+    <section class="section s9" data-title="Product Series"></section>
+    <section class="section s10" data-title="Product Series"></section>
+    <section class="section s11" id="section11" data-title= "Behind Story">
+  <div class="s11-stage">
+    <div class="s11-image-grid">
+      <figure><img src="images/section11/1.png"  alt=""></figure>
+      <figure><img src="images/section11/2.png"  alt=""></figure>
+      <figure><img src="images/section11/3.png"  alt=""></figure>
+      <figure><img src="images/section11/4.png"  alt=""></figure>
+      <figure><img src="images/section11/5.png"  alt=""></figure>
+      <figure><img src="images/section11/6.png"  alt=""></figure>
+      <figure><img src="images/section11/7.png"  alt=""></figure>
+      <figure><img src="images/section11/8.png"  alt=""></figure>
+      <figure><img src="images/section11/9.png"  alt=""></figure>
+      <figure><img src="images/section11/10.png" alt=""></figure>
+      <figure><img src="images/section11/11.png" alt=""></figure>
+      <figure><img src="images/section11/12.png" alt=""></figure>
+      <figure><img src="images/section11/13.png" alt=""></figure>
+      <figure><img src="images/section11/14.png" alt=""></figure>
+      <figure><img src="images/section11/15.png" alt=""></figure>
+      <figure><img src="images/section11/16.png" alt=""></figure>
+      <figure><img src="images/section11/17.png" alt=""></figure>
+      <figure><img src="images/section11/18.png" alt=""></figure>
+      <figure><img src="images/section11/19.png" alt=""></figure>
+      <figure><img src="images/section11/20.png" alt=""></figure>
+      <figure><img src="images/section11/21.png" alt=""></figure>
+      <figure><img src="images/section11/22.png" alt=""></figure>
+      <figure><img src="images/section11/23.png" alt=""></figure>
+      <figure><img src="images/section11/24.png" alt=""></figure>
+      <figure><img src="images/section11/25.png" alt=""></figure>
+    </div>
+
+    <div class="s11-mask-grid">
+      <div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div>
+      <div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div>
+      <div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div>
+      <div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div>
+      <div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div><div class="mask"></div>
+    </div>
+  </div>
+</section>
+
+
+    <section class="section s12" data-title="Behind Story">
+  <div class="s12-inner">
+    <aside class="s12-left">
+      <figure class="s12-logo-top">
+        <img src="images/main_logo.png" alt="Seekoo 로고">
+      </figure>
+
+      <div class="s12-meta">
+        <p>2025 Art and Design × Software Convergence Collaboration<br>
+        Project Year : 2025.04 - 2025. 10</p>
+      </div>
+
+      <div class="s12-team">
+        <h3>Industrial Designer</h3>
+        <ul>
+          <li>Jieun Kim</li>
+          <li>Soyun Jung</li>
+        </ul>
+
+        <h3>Software Engineer</h3>
+        <ul>
+          <li>Hyein Seo</li>
+          <li>Eunseo Oh</li>
+          <li>Seung hyeon Cho</li>
+          <li>Suman Chun</li>
+        </ul>
+      </div>
+
+      <figure class="s12-logo-bottom">
+        <img src="images/section12/small_logo.png" alt="Seekoo 심볼">
+      </figure>
+    </aside>
+
+    <figure class="s12-photo">
+      <img src="images/section12/pic.png" alt="Team Photo">
+    </figure>
+  </div>
+</section>
+
+
+
+
+  </main>
+
+<script>
+    // 뷰포트에 들어오면 show, 나가면 해제 → 스크롤 왕복마다 재생
+    (function(){
+      const targets = Array.from(document.querySelectorAll('.js-reveal'));
+
+      if ('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries)=>{
+          requestAnimationFrame(()=>{
+            entries.forEach(e=>{
+              e.target.classList.toggle('show', e.isIntersecting);
+            });
+          });
+        }, { root:null, threshold:0.15, rootMargin:'0px 0px -5% 0px' });
+
+        targets.forEach(el=>io.observe(el));
+      } else {
+        // 폴백
+        function onScroll(){
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          targets.forEach(el=>{
+            const r = el.getBoundingClientRect();
+            const visible = r.top < vh*0.85 && r.bottom > vh*0.15;
+            el.classList.toggle('show', visible);
+          });
+        }
+        window.addEventListener('scroll', onScroll, {passive:true});
+        window.addEventListener('resize', onScroll);
+        onScroll();
+      }
+    })();
+
+    // ✅ 새로 추가: 섹션별로 상단 타이틀 바뀌게
+  (function(){
+    const title = document.getElementById('pageTitle');
+    const sections = document.querySelectorAll('section');
+
+    // 각 section에 data-title 속성으로 표시할 이름 지정
+    sections.forEach((sec, i)=>{
+      if(!sec.dataset.title){
+        sec.dataset.title = i === 0 ? "Background" : "Research";
+      }
+    });
+
+    // 섹션 감시
+    const titleObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          const newTitle = entry.target.dataset.title;
+          if(title.textContent !== newTitle){
+            title.style.opacity = 0;
+            setTimeout(()=>{
+              title.textContent = newTitle;
+              title.style.opacity = 1;
+            }, 250);
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    sections.forEach(sec=>titleObserver.observe(sec));
+
+    
+  })();
+
+  (function(){
+    const body = document.body;
+    const s1 = document.querySelector('.s1');
+
+
+
+    
+    const s9 = document.querySelector('.s9');
+    const s10 = document.querySelector('.s10');
+    const s11 = document.querySelector('.s11');
+    const s12 = document.querySelector('.s12');
+
+
+
+
+
+    let current = 'light'; // 현재 상태
+
+    const bgObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          if(current !== 'black'){
+            body.classList.add('to-dark');
+            body.classList.remove('to-light');
+            current = 'black';
+          }
+        } else {
+          if(current !== 'light'){
+            body.classList.add('to-light');
+            body.classList.remove('to-dark');
+            current = 'light';
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+
+
+    if(s1) bgObserver.observe(s1);
+
+    if(s8) bgObserver.observe(s8);
+    if(s9) bgObserver.observe(s9);
+    if(s10) bgObserver.observe(s10);
+    if(s11) bgObserver.observe(s11);
+    if(s12) bgObserver.observe(s12);
+
+
+
+
+
+  })();
+
+  document.addEventListener("scroll", () => {
+  const section4 = document.querySelector(".section4");
+  const rect = section4.getBoundingClientRect();
+
+  if (rect.top < window.innerHeight * 0.8) {
+    section4.classList.add("visible");
+  }
+});
+
+  </script>
+
+
+
+<script>
+  const s5 = document.querySelector('.section5');
+  const io5 = new IntersectionObserver(
+    (entries)=>entries.forEach(e=>{ if(e.isIntersecting){ s5.classList.add('is-inview'); } }),
+    { threshold: 0.25 }
+  );
+  io5.observe(s5);
+</script>
+
+<script>
+  (function(){
+    const titleEl = document.getElementById('pageTitle');
+    const sections = Array.from(document.querySelectorAll('section.section, section.s1, section.s2, section.s3, section.s4, section.s5, section.s6, section.s7, section.s8, section.s9, section.s10, section.s11, section.s12'));
+
+    // data-title 없으면 기본값 채우기
+    sections.forEach((sec, i) => {
+      if (!sec.dataset.title) sec.dataset.title = `Section ${i+1}`;
+    });
+
+    // 가장 많이 보이는 섹션을 찾기 위한 맵
+    const ratios = new Map();
+    let currentTitle = titleEl.textContent.trim();
+    let swapTimer = null;
+
+    function swapTitle(next){
+      if (next === currentTitle) return;
+      currentTitle = next;
+      titleEl.classList.add('is-swapping');
+      clearTimeout(swapTimer);
+      swapTimer = setTimeout(()=>{
+        titleEl.textContent = next;
+        // 다음 프레임에서 복귀(페이드 인)
+        requestAnimationFrame(()=> titleEl.classList.remove('is-swapping'));
+      }, 220); // CSS 전환 시간(.35s)보다 약간 짧게
+    }
+
+    const thresholds = Array.from({length: 11}, (_, i) => i/10); // 0.0~1.0
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e => ratios.set(e.target, e.intersectionRatio));
+      // 가장 많이 보이는 섹션 선택
+      let best = null, bestR = -1;
+      ratios.forEach((r, sec) => { if (r > bestR) { bestR = r; best = sec; } });
+      if (best) swapTitle(best.dataset.title || '');
+    }, {
+      root: null,
+      threshold: thresholds,
+      // 상·하단 여백을 줄여 좀 더 “중앙에 왔을 때” 바꾸도록
+      rootMargin: '-30% 0px -40% 0px'
+    });
+
+    sections.forEach(sec => io.observe(sec));
+  })();
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // solar.html (Focus)
+    const solarLink = document.getElementById('link-solar');
+    if (solarLink) {
+      solarLink.addEventListener('click', function() {
+        window.location.href = 'solar.html';
+      });
+    }
+
+    // roll.html (Ro.ll)
+    const rollLink = document.getElementById('link-roll');
+    if (rollLink) {
+      rollLink.addEventListener('click', function() {
+        window.location.href = 'move.html';
+      });
+    }
+
+    // seekoo.html (Seekoo)
+    const seekooLink = document.getElementById('link-logo');
+    if (seekooLink) {
+      seekooLink.addEventListener('click', function() {
+        window.location.href = 'seekoo.html';
+      });
+    }
+  });
+</script>
+<script>
+  // 모든 section
+  const sections = document.querySelectorAll(".section");
+  if (!sections.length) { console.warn("No .section found"); }
+
+  let current = 0;
+  const STEP_MS = 10000;       // 기본 대기: 10초
+  const HOLD_AFTER_USER = 3000; // 사용자가 스크롤하면 3초 쉬었다가 재개
+  let autoTimer = null;
+
+  // 초기 표시
+  sections[current].classList.add("fade-in");
+
+  function scrollToNext() {
+    // 페이드 전환
+    sections[current].classList.remove("fade-in");
+    sections[current].classList.add("fade-out");
+
+    // 다음 인덱스 (무한 루프)
+    current = (current + 1) % sections.length;
+
+    // 스크롤 이동
+    sections[current].scrollIntoView({ behavior: "smooth" });
+
+    // 도착 후 페이드인
+    setTimeout(() => {
+      sections[current].classList.remove("fade-out");
+      sections[current].classList.add("fade-in");
+    }, 1000);
+
+    // 다음 스텝 예약
+    scheduleNext(STEP_MS);
+  }
+
+  function scheduleNext(delay = STEP_MS) {
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(scrollToNext, delay);
+  }
+
+  // 화면에서 가장 중심에 가까운 섹션의 인덱스 구하기
+  function getActiveIndexByViewport() {
+    const vhMid = (window.innerHeight || document.documentElement.clientHeight) / 2;
+    let best = 0, bestDist = Infinity;
+
+    sections.forEach((sec, i) => {
+      const r = sec.getBoundingClientRect();
+      const secMid = r.top + r.height / 2;
+      const dist = Math.abs(secMid - vhMid);
+      if (dist < bestDist) { bestDist = dist; best = i; }
+    });
+    return best;
+  }
+
+  // 수동 스크롤/키 입력 감지 → 현재 인덱스 동기화 + 타이머 리셋
+  /*
+  function onUserActivity() {
+    const active = getActiveIndexByViewport();
+    if (active !== current) {
+      // 기존 섹션의 페이드인 상태 정리
+      sections[current].classList.remove("fade-in");
+      // 새 섹션을 현재로 설정하고 페이드인
+      current = active;
+      sections[current].classList.add("fade-in");
+    }
+    // 사용자 활동 이후 잠깐 멈췄다가 다시 자동 진행
+    scheduleNext(HOLD_AFTER_USER);
+  }
+
+  // 휠/터치/키보드(방향키, 스페이스, PageUp/Down) 이벤트로 사용자 활동 감지
+  window.addEventListener("wheel", onUserActivity, { passive: true });
+  window.addEventListener("touchmove", onUserActivity, { passive: true });
+  window.addEventListener("keydown", (e) => {
+    const keys = ["ArrowDown","ArrowUp","PageDown","PageUp","Home","End"," "];
+    if (keys.includes(e.key)) onUserActivity();
+  });
+
+  // 첫 스케줄 시작
+  scheduleNext(STEP_MS);
+  */
+</script>
+
+
+
+<script>
+        const scrollIndicator = document.querySelector('.scroll-indicator');
+        let scrollTimeout;
+        let lastScrollY = window.scrollY;
+
+        scrollIndicator.addEventListener('click', () => {
+            // 1. body에 애니메이션 클래스 추가
+            document.documentElement.style.scrollSnapType = 'none';
+            document.body.classList.add('fade-out-down');
+
+            // 2. 애니메이션 시간(0.8초)이 지난 후 페이지 이동
+            setTimeout(() => {
+                window.location.href = 'index.html#main';
+            }, 800); 
+        });
+    </script>
+
+    <script>
+(function(){
+  const cursor = document.getElementById('customCursor');
+  if (!cursor) return;
+
+  let x = window.innerWidth/2, y = window.innerHeight/2;
+  let tx = x, ty = y;           // 렌더용 좌표(부드러운 추적 원하면 사용)
+  let rafId = null;
+
+  // 마우스 움직임 수신
+  window.addEventListener('mousemove', (e)=>{
+    x = e.clientX; y = e.clientY;
+    // 즉시 추적(부드러운 추적 원하면 아래 애니메이션 루프 사용)
+    cursor.style.left = x + 'px';
+    cursor.style.top  = y + 'px';
+  }, {passive:true});
+
+  // 링크/버튼 위에서 크기 키우기
+  function isInteractive(el){
+    return el.closest('a, button, [role="button"], input, select, textarea, .clickable');
+  }
+  document.addEventListener('mouseover', (e)=>{
+    if (isInteractive(e.target)) cursor.classList.add('is-link');
+  });
+  document.addEventListener('mouseout', (e)=>{
+    if (isInteractive(e.target)) cursor.classList.remove('is-link');
+  });
+
+  // 클릭 피드백
+  window.addEventListener('mousedown', ()=> cursor.classList.add('is-down'));
+  window.addEventListener('mouseup',   ()=> cursor.classList.remove('is-down'));
+
+  // 스크롤 때도 위치 유지(필수는 아니지만 부드럽게 보정)
+  window.addEventListener('scroll', ()=>{
+    cursor.style.left = x + 'px';
+    cursor.style.top  = y + 'px';
+  }, {passive:true});
+
+  // 참고: 더 부드러운 추적을 원하면 아래 주석 해제
+  /*
+  function loop(){
+    tx += (x - tx) * 0.25;
+    ty += (y - ty) * 0.25;
+    cursor.style.left = tx + 'px';
+    cursor.style.top  = ty + 'px';
+    rafId = requestAnimationFrame(loop);
+  }
+  rafId = requestAnimationFrame(loop);
+  */
+})();
+</script>
+
+
+<script>
+  
+(function(){
+  const indicator = document.querySelector('.scroll-indicator');
+  if (!indicator) return;
+
+  // 배경 밝기 계산 함수
+  function getBrightness(color){
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.fillStyle = color;
+    const computed = ctx.fillStyle;
+    const rgb = computed.match(/\d+/g);
+    if (!rgb) return 0;
+    const [r, g, b] = rgb.map(Number);
+    return (r * 299 + g * 587 + b * 114) / 1000; // 밝기 공식
+  }
+
+  function updateIndicatorColor(){
+    const bg = getComputedStyle(document.body).backgroundColor;
+    const brightness = getBrightness(bg);
+    // 128을 기준으로 밝으면 light 클래스 추가
+    if (brightness > 128) indicator.classList.add('light');
+    else indicator.classList.remove('light');
+  }
+
+  // 초기 실행 + 바디 배경이 변할 때 재실행
+  updateIndicatorColor();
+
+  // body 클래스(to-dark/to-light) 변화를 감지
+  const observer = new MutationObserver(updateIndicatorColor);
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+})();
+  // 화면이 768px 이하 (모바일)이면 문구 교체
+  if (window.innerWidth <= 768) {
+    const p = document.getElementById('branding-pc');
+    p.innerHTML = `
+      에너지를 '직접 만들어보는' 신체활동 놀이로<br>
+      아이들을 자연 속 '탐험가'로 이끌어냅니다.<br>
+      스스로 에너지를 발견하고 만들면서, 환경의 소중함을<br>
+      체험하고 지속가능한 성장을 이루어갑니다.
+    `;
+  }
+document.addEventListener("DOMContentLoaded", function () {
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  if (!isMobile) return; // 모바일이 아닐 때 실행 X
+
+  const masks = Array.from(document.querySelectorAll(".s11-mask-grid .mask"));
+  const container = document.querySelector(".s11-mask-grid");
+  let flipped = false;
+
+  if (!container || masks.length === 0) return;
+
+  // Fisher–Yates 셔플 (랜덤 순서)
+  function shuffle(array) {
+    const a = array.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // 터치 시 한 번만 랜덤 도미노 실행
+  container.addEventListener("touchstart", function (e) {
+    e.preventDefault();
+    if (flipped) return; // 이미 한 번 실행했으면 종료
+    flipped = true;
+
+    const shuffled = shuffle(masks);
+    shuffled.forEach((mask, index) => {
+      setTimeout(() => {
+        mask.style.opacity = "0";
+      }, index * 80 + Math.random() * 120); // 랜덤 간격 도미노
+    });
+  });
+});
+
+</script>
+</body>
+</html>

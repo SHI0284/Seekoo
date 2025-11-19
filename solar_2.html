@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seekoo.</title>
+    <style>
+      /* ----- 기본 스타일 리셋 ----- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* ----- 전체 페이지 스타일 ----- */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: #ffffff;
+        color: #333;
+        line-height: 1.6;
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        overflow-x: hidden;
+      }
+
+      body.drawer-open {
+        overflow: hidden;
+        height: 100%;
+      }
+      .drawer-body {
+        max-height: 100vh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* ... (중략) ... */
+
+      body.fade-out-down {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+
+      body.fade-out-up {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+
+      .site-header {
+        position: fixed;
+        top: 20px;
+        left: 50px;
+        z-index: 10;
+      }
+
+      .site-header .logo img {
+        display: block;
+        width: 200px;
+      }
+
+      .hero-section,
+      .reversed-section {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 20px;
+        position: relative;
+        scroll-snap-align: start;
+      }
+
+      .content-grid {
+        display: flex;
+        align-items: stretch;
+        gap: 80px;
+        width: 95%;
+        max-width: 1400px;
+      }
+
+      .main-image-container {
+        flex: 2;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        aspect-ratio: 5 / 4;
+        transform: translateX(-30px) translateY(-30px) scale(1.15);
+      }
+
+      .main-video-container {
+        flex: 0 0 1000px;
+        width: 800px;
+        height: 672px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        border-radius: 20px;
+        transform: translateX(-380px) translateY(70px);
+      }
+
+      .main-image-container img {
+        width: 90%;
+        max-height: 75vh;
+        object-fit: cover;
+        display: block;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      .main-video-container video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 20px;
+        display: block;
+      }
+
+      .right-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .product-shot {
+        align-self: flex-end;
+        margin-bottom: 25px;
+        transform: translateX(30px) translateY(100px) scale(4);
+      }
+
+      .product-shot2 {
+        align-self: flex-end;
+        margin-bottom: 25px;
+        transform: translateX(-220px) translateY(0px) scale(0.85);
+        z-index: 2;
+      }
+
+      .product-shot img {
+        width: 80%;
+        max-width: 200px;
+        height: auto;
+        display: block;
+      }
+
+      .product-description {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #555;
+        max-width: 1500px;
+        line-height: 1.2;
+        font-weight: 500;
+        align-self: flex-start;
+        transform: translateX(-80px) translateY(10px) scale(1.2);
+      }
+
+      /* ... (이하 데스크탑 CSS 코드는 모두 동일) ... */
+
+      .product-description2 {
+        font-size: 14px;
+        color: #555;
+        max-width: 1500px;
+        font-weight: 500;
+        align-self: flex-start;
+        line-height: 1.2;
+        transform: translateX(-50px) translateY(-50px) scale(1.2);
+      }
+
+      .product-description h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      .scroll-indicator {
+        position: fixed;
+        bottom: 30px;
+        right: 20px;
+        width: 70px;
+        z-index: 10;
+        transition: transform 0.3s ease-in-out;
+        cursor: pointer;
+      }
+
+      .scroll-indicator img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .main-image-container--reversed {
+        justify-content: flex-end;
+      }
+
+      .product-shot--reversed {
+        align-self: flex-start;
+      }
+
+      .content-grid--no-gap {
+        gap: 0;
+      }
+
+      .third-section .right-info {
+        padding: 0 40px;
+      }
+
+      .third-section .product-shot img {
+        max-width: 110%;
+        width: 110%;
+      }
+
+      .quickbar {
+        position: fixed;
+        top: 40%;
+        right: 0px;
+        transform: translateY(-50%) translateX(18px);
+        width: 70px;
+        height: 700px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.65),
+          rgba(255, 255, 255, 0.35)
+        );
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease, transform 0.35s ease,
+          box-shadow 0.35s ease;
+        z-index: 30;
+        border-left: 4px solid var(--accent);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 30px;
+      }
+
+      /* ... (이하 CSS, HTML, Script 모두 동일) ... */
+
+      .quickbar.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(-50%) translateX(0);
+      }
+      .quickbar:hover {
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+      }
+
+      .qb-label {
+        writing-mode: vertical-rl;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        color: #000;
+        font-size: clamp(18px, 2.2vw, 24px);
+      }
+
+      /* 슬라이드 패널 */
+      .drawer {
+        position: fixed;
+        inset: 0 0 0 auto;
+        width: 420px;
+        max-width: 86vw;
+        transform: translateX(100%);
+        background: rgba(255, 255, 255, 0.82);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        box-shadow: -24px 0 48px rgba(0, 0, 0, 0.18);
+        transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.2, 1);
+        z-index: 40;
+        border-left: 6px solid var(--accent);
+      }
+      .drawer.open {
+        transform: translateX(0);
+      }
+      .drawer-body {
+        padding: 24px 20px 48px;
+      }
+      .drawer-close {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        font-size: 28px;
+        line-height: 1;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        color: #333;
+      }
+
+      /* 어두운 스크림 */
+      .drawer-scrim {
+        position: fixed;
+        inset: 0;
+        background: rgba(187, 187, 187, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 35;
+      }
+      .drawer-scrim.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      @keyframes pulseBounce {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 10px 5px rgba(255, 255, 255, 1),
+            0 0 10px 30px rgba(255, 255, 255, 0.75),
+            0 0 10px 60px rgba(255, 216, 145, 0.75),
+            0 0 10px 90px rgba(255, 216, 145, 0.8);
+        }
+        40% {
+          transform: scale(1.08);
+          box-shadow: 0 0 15px 10px rgba(255, 255, 255, 1),
+            0 0 25px 50px rgba(255, 255, 255, 0.75),
+            0 0 20px 80px rgba(255, 216, 145, 0.75),
+            0 0 20px 110px rgba(255, 216, 145, 0.8);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .overlay.bounce::after {
+        animation: pulseBounce 0.7s ease-out;
+      }
+
+      @keyframes rippleWave {
+        0% {
+          transform: scale(0.3);
+          opacity: 0.9;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.4;
+        }
+        100% {
+          transform: scale(1.8);
+          opacity: 0;
+        }
+      }
+
+      .ripple {
+        position: fixed;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.9) 0%,
+          rgba(255, 216, 145, 0.3) 40%,
+          transparent 80%
+        );
+        pointer-events: none;
+        transform: scale(0);
+        animation: rippleWave 1.2s ease-out forwards;
+        z-index: 9;
+      }
+
+      /* ----- 지그재그 이미지 리스트 ----- */
+      .zigzag-list {
+        display: grid;
+        gap: 0px;
+        margin-top: 20px;
+      }
+
+      /* ----- 이미지 스타일 (비율/크기 조절 핵심 부분) ----- */
+      .zz-img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 5 / 3;
+        object-fit: cover;
+        border-radius: 12px;
+        transition: transform 0.3s ease;
+        transform: scale(0.9);
+      }
+
+      .zz-item:hover .zz-img {
+        transform: scale(1);
+      }
+
+      @media (max-width: 768px) {
+        .site-header {
+          left: 20px;
+        }
+
+        .site-header .logo img {
+          width: 120px;
+        }
+
+        .scroll-indicator {
+          right: 20px;
+          bottom: 20px;
+          width: 50px;
+        }
+
+        .hero-section,
+        .reversed-section {
+          padding: 100px 20px;
+        }
+
+        .content-grid {
+          flex-direction: column;
+          align-items: center;
+          gap: 40px;
+          width: 90%;
+        }
+
+        .content-grid--reversed {
+          flex-direction: column-reverse;
+        }
+
+        /* ▼▼▼ [수정] .right-info에 width: 100% 추가 ▼▼▼ */
+        .right-info {
+          align-items: center;
+          text-align: center;
+          margin-left: 0;
+          width: 100%; /* .product-shot이 정렬될 기준 너비 확보 */
+        }
+        /* ▲▲▲ [수정] .right-info에 width: 100% 추가 ▲▲▲ */
+
+        .main-image-container {
+          transform: none;
+          width: 100%;
+          aspect-ratio: 16 / 10;
+          flex: 1;
+        }
+        .main-image-container img {
+          width: 100%;
+          max-height: none;
+        }
+
+        .main-video-container {
+          transform: none;
+          width: 100%;
+          height: auto;
+          aspect-ratio: 16 / 9;
+          flex: 1;
+        }
+
+        /* ▼▼▼ [수정] align-self: flex-end;로 변경 ▼▼▼ */
+        .product-shot,
+        .product-shot--reversed {
+          align-self: flex-end; /* 'auto' -> 'flex-end' (오른쪽 정렬) */
+
+          transform: none;
+          margin-bottom: 0;
+        }
+        /* ▲▲▲ [수정] align-self: flex-end;로 변경 ▲▲▲ */
+
+        .product-shot img {
+          max-width: 150px;
+        }
+
+        /* product-shot2는 원래대로 중앙 정렬 유지 */
+        .product-shot2 {
+          transform: none;
+          margin-bottom: 0;
+          align-self: auto; /* 부모(.right-info)의 center를 따름 */
+        }
+        .product-shot2 img {
+          max-width: 250px;
+        }
+
+        .product-description {
+          align-self: auto; /* 설명글은 중앙 정렬 유지 */
+          transform: none;
+          max-width: 100%;
+        }
+        .product-description2 {
+          transform: none;
+          max-width: 100%;
+        }
+
+        .third-section .right-info {
+          padding: 0;
+        }
+
+        .quickbar {
+          width: 45px;
+          height: auto;
+          padding: 15px 0;
+          border-radius: 10px 0 0 10px;
+          transform: translateY(-50%) translateX(0);
+          top: 50%;
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .qb-label {
+          font-size: 16px;
+        }
+
+        .drawer {
+          width: 90vw;
+          max-width: 90vw;
+        }
+
+        .zigzag-list {
+          gap: 16px;
+        }
+        .zigzag-list .zz-item:nth-child(odd),
+        .zigzag-list .zz-item:nth-child(even) {
+          transform: none;
+        }
+        .zz-img {
+          aspect-ratio: 1 / 1;
+        }
+      }
+      /* ▲▲▲ 모바일 반응형 코드 (여기까지 수정) ▲▲▲ */
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a href="#" class="logo">
+        <img src="images/focus_text.png" alt="Seekoo Logo" />
+      </a>
+    </header>
+
+    <section class="hero-section">
+      <div class="content-grid">
+        <div class="main-image-container">
+          <img
+            src="images/solar_image/picture.png"
+            alt="A child holding a yellow solar-powered device in a natural setting."
+          />
+        </div>
+        <div class="right-info">
+          <div class="product-shot">
+            <img
+              src="images/solar_image/object.png"
+              alt="Top-down view of the solar device."
+            />
+          </div>
+          <p class="product-description">
+            아이들은 <strong><span style="font-size: 18px">FOCUS</span></strong
+            >를 들고 햇살이 비추는 곳으로 나가, <br />
+            태양의 빛을 모으고 돋보기를 조정하며 자연을 탐구합니다. <br /><br />
+            빛의 움직임과 그림자의 변화를 관찰하는 과정에서<br />에너지의 흐름과
+            태양의 힘을 몸으로 느낍니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reversed-section third-section">
+      <div class="content-grid content-grid--no-gap">
+        <div class="right-info">
+          <div class="product-shot2">
+            <img
+              src="images/solar_image/arduino.png"
+              alt="Top-down view of the solar device."
+            />
+          </div>
+          <p class="product-description2"></p>
+        </div>
+        <div class="main-video-container">
+          <div class="video-frame">
+            <video autoplay loop muted playsinline>
+              <source src="images/solar_process.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <button
+      class="quickbar"
+      id="quickBar"
+      aria-controls="sideDrawer"
+      aria-expanded="false"
+    >
+      <span class="qb-label">SCENARIO</span>
+    </button>
+
+    <aside class="drawer" id="sideDrawer" aria-hidden="true">
+      <button class="drawer-close" id="drawerClose" aria-label="Close">
+        ×
+      </button>
+      <div class="drawer-body">
+        <h3 style="margin-bottom: 10px">SCENARIO</h3>
+        <div class="zigzag-list">
+          <figure class="zz-item">
+            <img
+              class="zz-img"
+              src="images/solar_image/scenario1.png"
+              alt="시나리오 1"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="zz-item">
+            <img
+              class="zz-img"
+              src="images/solar_image/scenario2.png"
+              alt="시나리오 2"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="zz-item">
+            <img
+              class="zz-img"
+              src="images/solar_image/scenario3.png"
+              alt="시나리오 3"
+              loading="lazy"
+            />
+          </figure>
+          <figure class="zz-item">
+            <img
+              class="zz-img"
+              src="images/solar_image/scenario4.png"
+              alt="시나리오 4"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </div>
+    </aside>
+
+    <div class="drawer-scrim" id="drawerScrim"></div>
+
+    <div class="scroll-indicator">
+      <img
+        src="images/seekoo_image/seekoo_pentagon.png"
+        alt="Scroll down indicator"
+      />
+    </div>
+    <script>
+      /* ===========================
+ 🎯 페이지 전환: solar2 → solar
+=========================== */
+      let isNavigating = false;
+
+      // 🖱 데스크탑 휠: 위로 스크롤 시 이전 페이지 (맨 위일 때만)
+      window.addEventListener(
+        "wheel",
+        (event) => {
+          const drawerOpen = document.body.classList.contains("drawer-open");
+          if (isNavigating || drawerOpen) return; // 🚫 drawer 열렸을 때 차단
+
+          if (event.deltaY < 0 && window.scrollY <= 0) {
+            isNavigating = true;
+            document.body.classList.add("fade-out-up");
+            setTimeout(() => (window.location.href = "solar.html"), 800);
+          }
+        },
+        { passive: true }
+      );
+      
+      // 🔁 뒤로가기 시 애니메이션 복원
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+          isNavigating = false;
+          document.body.classList.remove("fade-out-up");
+        }
+      });
+    </script>
+
+    <script>
+      /* ===========================
+ 🧭 Scroll indicator
+=========================== */
+      const scrollIndicator = document.querySelector(".scroll-indicator");
+      if (scrollIndicator) {
+        scrollIndicator.addEventListener("click", () => {
+          document.body.classList.add("fade-out-down");
+          setTimeout(() => {
+            window.location.href = "index.html#main";
+          }, 800);
+        });
+      }
+    </script>
+
+    <script>
+      /* ===========================
+ 📑 Drawer (SCENARIO)
+=========================== */
+      const quickBar = document.getElementById("quickBar");
+      const drawer = document.getElementById("sideDrawer");
+      const scrim = document.getElementById("drawerScrim");
+      const drawerClose = document.getElementById("drawerClose");
+
+      function openDrawer() {
+        drawer.classList.add("open");
+        scrim.classList.add("show");
+        document.body.classList.add("drawer-open");
+      }
+      function closeDrawer() {
+        drawer.classList.remove("open");
+        scrim.classList.remove("show");
+        document.body.classList.remove("drawer-open");
+      }
+
+      quickBar.addEventListener("click", openDrawer);
+      drawerClose.addEventListener("click", closeDrawer);
+      scrim.addEventListener("click", closeDrawer);
+      addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeDrawer();
+      });
+
+      // 마우스 오른쪽 진입 시 QuickBar 표시
+      let lastX = 0;
+      addEventListener(
+        "mousemove",
+        (e) => {
+          lastX = e.clientX;
+          const threshold = innerWidth * 0.7;
+          quickBar.classList.toggle(
+            "visible",
+            lastX >= threshold || "ontouchstart" in window
+          );
+        },
+        { passive: true }
+      );
+      addEventListener("touchstart", () => quickBar.classList.add("visible"), {
+        passive: true,
+      });
+    </script>
+
+    <script>
+      /* ===========================
+ 💥 Ripple 효과
+=========================== */
+      document.addEventListener("click", (e) => {
+        const count = 3;
+        const delay = 150;
+
+        for (let i = 0; i < count; i++) {
+          const ripple = document.createElement("div");
+          ripple.className = "ripple";
+          const size = 200 + i * 60;
+          ripple.style.width = `${size}px`;
+          ripple.style.height = `${size}px`;
+          ripple.style.left = `${e.clientX - size / 2}px`;
+          ripple.style.top = `${e.clientY - size / 2}px`;
+          ripple.style.animationDelay = `${i * delay}ms`;
+          document.body.appendChild(ripple);
+          ripple.addEventListener("animationend", () => ripple.remove());
+        }
+      });
+    </script>
+  </body>
+</html>

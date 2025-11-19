@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Series Mapper</title>
+  <style>
+    /* Base styles for layout */
+    html, body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    .section {
+      position: relative;
+      min-height: 100vh;
+      padding-top: 72px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    /* ===== Section 6 Styles ===== */
+    .section6 {
+      background: #fff;
+      color: #111;
+      padding: 6rem 2rem;
+      /* CSS Variables for label positioning */
+      --focus-x: -430px; --focus-y: -150px; --focus-scale: 1;
+      --roll-x: -200px; --roll-y: 250px; --roll-scale: 1;
+      --logo-x: 593px; --logo-y: -20px; --logo-scale: 1;
+    }
+
+    .s6-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    /* Title */
+    .s6-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .s6-title img {
+      width: min(180px, 40%);
+      height: auto;
+      display: block;
+      transform: translateX(65px) translateY(-50px) scale(0.4);
+    }
+
+    .s6-title span {
+      font-size: clamp(16px, 1.4vw, 30px);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transform: translateX(-15px) translateY(-50px) scale(0.7);
+    }
+
+    /* Product Stage - Clicks are captured here */
+    .s6-stage {
+      position: relative; /* Crucial for absolute positioning dots */
+      min-height: 520px;
+      cursor: crosshair; /* Indicates a clickable mapping area */
+    }
+
+    .s6-product {
+      width: min(920px, 92%);
+      height: auto; /* Maintain aspect ratio */
+      display: block;
+      margin: 0 auto;
+      pointer-events: none; /* Allows clicks to go "through" to the stage */
+      transform: scale(1.7);
+    }
+
+    /* Labels */
+    .s6-label {
+      position: absolute;
+      top: 30%;
+      left: 30%;
+      transform-origin: center center;
+      user-select: none;
+      pointer-events: none; /* Prevent labels from blocking clicks */
+    }
+
+    .s6-label.focus { transform: translate(var(--focus-x), var(--focus-y)) scale(var(--focus-scale)); }
+    .s6-label.roll { transform: translate(var(--roll-x), var(--roll-y)) scale(var(--roll-scale)); }
+    .s6-label.logo { transform: translate(var(--logo-x), var(--logo-y)) scale(var(--logo-scale)); }
+
+    .s6-footnote {
+      margin-top: 10rem;
+      font-size: clamp(12px, 1vw, 14px);
+      color: #7a7a7a;
+      transform: translateX(40px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .section6 { --focus-x: -200px; --roll-x: -110px; --logo-x: 240px; }
+      .s6-stage { min-height: 460px; }
+      .s6-product { width: min(820px, 96%); }
+    }
+    @media (max-width: 640px) {
+      .section6 { --focus-scale: .9; --roll-scale: .9; --logo-scale: .9; }
+      .s6-stage { min-height: 400px; }
+    }
+    
+  </style>
+</head>
+<body>
+
+  <section class="section section6" data-title="Product Series">
+    <div class="s6-inner">
+      <div class="s6-title">
+        <img src="./images/main_logo.png" alt="Seekoo 로고">
+        <span>Product Series</span>
+      </div>
+
+      <div class="s6-stage" id="click-stage">
+      
+     <img class="s6-product" src="./images/section6/product.png" alt="Product">
+
+      <!-- 라벨 3종 -->
+      <img class="s6-label focus" src="./images/section6/focus_label.png" alt="Focus">
+      <img class="s6-label roll"  src="./images/section6/roll_label.png"   alt="Ro.ll">
+      <img class="s6-label logo"  src="./images/section6/logo_label.png"  alt="Seekoo">
+
+
+  <script>
+    // Get the stage element
+    const stage = document.getElementById('click-stage');
+
+    // Add a click event listener
+    stage.addEventListener('click', function(event) {
+      
+      // Get the x and y coordinates relative to the clicked element (the stage)
+      const x = event.offsetX;
+      const y = event.offsetY;
+
+      // Log the coordinates to the console
+      console.log(`Clicked at (x, y): ${x}, ${y}`);
+
+      // Create a new div element for the red dot
+      const dot = document.createElement('div');
+      
+      // Style the dot
+      dot.style.position = 'absolute';
+      dot.style.width = '10px';
+      dot.style.height = '10px';
+      dot.style.backgroundColor = 'red';
+      dot.style.borderRadius = '50%';
+      dot.style.border = '1px solid white'; // Makes it more visible
+      dot.style.zIndex = '10'; // Ensure it's on top
+      dot.style.pointerEvents = 'none'; // So the dot doesn't block future clicks
+
+      // Position the dot. We subtract half its width/height 
+      // so the *center* of the dot is at the click location.
+      dot.style.left = `${x - 5}px`;
+      dot.style.top = `${y - 5}px`;
+
+      // Add the dot to the stage
+      stage.appendChild(dot);
+    });
+  </script>
+
+</body>
+</html>

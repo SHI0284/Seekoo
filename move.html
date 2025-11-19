@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MOVE</title>
+    <style>
+      @font-face {
+        font-family: "Almarai";
+        src: url("./fonts/Almarai-Regular.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      :root {
+        --r: 350px;
+        --mx: 50vw;
+        --my: 50vh;
+        --overlay: #ffd891;
+        --under-offset: 255px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+
+      /* 아래쪽 페이지 */
+      .under {
+        min-height: 100vh;
+        display: flex;
+        align-items: center; /* 세로 중앙 */
+        padding: 0 2rem 0 20vw;
+      }
+
+      .under-logo {
+        display: flex;
+        align-items: flex-start;
+        gap: 30px;
+        transform: translateY(35px);
+      }
+
+      .under-dot {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 70%;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 216, 145, 0.95) 0 40%,
+          rgba(255, 216, 145, 0.75) 55%,
+          rgba(255, 216, 145, 0.4) 100%
+        );
+      }
+
+      /* 왼쪽으로 이동한 복제 원들 */
+      .under-dot::before,
+      .under-dot::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 70%;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 216, 145, 0.95) 0 40%,
+          rgba(255, 216, 145, 0.75) 55%,
+          rgba(255, 216, 145, 0.4) 100%
+        );
+        z-index: -1;
+      }
+
+      .under-dot::before {
+        transform: translateX(-25px);
+        opacity: 0.7;
+      }
+
+      .under-dot::after {
+        transform: translateX(-50px);
+        opacity: 0.4;
+      }
+
+      .under-word {
+        color: #ffd891;
+        font-family: "Almarai", sans-serif;
+        /* [수정] clamp(min, pref, max) 순서 수정 */
+        font-size: clamp(44px, 6vw, 60px);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transform: translateY(15px);
+      }
+
+      .under-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 50px;
+      }
+
+      /* 1. 두 레이어에 부드러운 transition 적용 */
+      .overlay,
+      .under {
+        transition: opacity 0.8s ease;
+      }
+
+      /* 2. 페이지가 사라질 때 적용할 클래스 */
+      body.page-fading-out .overlay,
+      body.page-fading-out .under {
+        opacity: 0;
+        pointer-events: none; /* 사라지는 동안 클릭 방지 */
+      }
+
+      /* [추가] 위로 사라지는 효과 */
+      body.fade-out-up {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+
+      .under-text h1 {
+        font-size: 32px;
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+
+      .under-text h1 mark {
+        background: #ffd891;
+        color: #ffffff;
+        padding: 0.15em 0.35em;
+      }
+
+      .under-text p {
+        max-width: 60ch;
+        line-height: 1.65;
+        margin-bottom: 0.75rem;
+      }
+
+      /* ... (이하 CSS 코드 모두 동일) ... */
+
+      /* 위쪽 오렌지 오버레이 */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        background: var(--overlay);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 20vw;
+
+        -webkit-mask: radial-gradient(
+          circle var(--r) at var(--mx) var(--my),
+          transparent 98%,
+          black 100%
+        );
+        mask: radial-gradient(
+          circle var(--r) at var(--mx) var(--my),
+          transparent 98%,
+          black 100%
+        );
+      }
+
+      /* 오버레이 내부 로고 */
+      .overlay-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 30px;
+      }
+
+      .overlay-dot {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 70%;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 255, 255, 0.95) 0 40%,
+          rgba(255, 255, 255, 0.75) 55%,
+          rgba(255, 255, 255, 0.4) 100%
+        );
+      }
+
+      .overlay-dot::before,
+      .overlay-dot::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 70%;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 255, 255, 0.95) 0 40%,
+          rgba(255, 255, 255, 0.75) 55%,
+          rgba(255, 255, 255, 0.4) 100%
+        );
+        z-index: -1;
+      }
+
+      .overlay-dot::before {
+        transform: translateX(-25px);
+        opacity: 0.7;
+      }
+
+      .overlay-dot::after {
+        transform: translateX(-50px);
+        opacity: 0.4;
+      }
+
+      .overlay-word {
+        color: #ffffff;
+        font-family: "Almarai", sans-serif;
+        font-size: clamp(44px, 6vw, 60px);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .spot {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: calc(var(--r) * 2);
+        height: calc(var(--r) * 2);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 11;
+        transform: translate(-9999px, -9999px);
+
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 255, 255, 1) 0%
+        );
+        box-shadow: 0 0 25px 10px rgba(255, 255, 255, 0.28),
+          0 0 40px 24px rgba(255, 216, 145, 0.2);
+      }
+
+      .spot-lead {
+        display: none;
+      }
+      .spot-trail1 {
+        margin-left: -70px;
+        opacity: 0.6;
+        filter: blur(0.5px);
+      }
+      .spot-trail2 {
+        margin-left: -140px;
+        opacity: 0.35;
+        filter: blur(1px);
+      }
+
+      /* 오른쪽 퀵바 */
+      .quickbar {
+        position: fixed;
+        top: 70%;
+        right: 0px;
+        transform: translateY(-50%) translateX(18px);
+        width: 70px;
+        height: 1000px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.65),
+          rgba(255, 255, 255, 0.35)
+        );
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease, transform 0.35s ease,
+          box-shadow 0.35s ease;
+        z-index: 30;
+        border-left: 4px solid var(--accent);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 30px;
+      }
+      .quickbar.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(-50%) translateX(0);
+      }
+      .quickbar:hover {
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+      }
+
+      .qb-label {
+        writing-mode: vertical-rl;
+        font-weight: 500;
+        letter-spacing: 0.4px;
+        color: #000;
+        font-size: clamp(18px, 2.2vw, 24px);
+      }
+
+      /* 슬라이드 패널 */
+      .drawer {
+        position: fixed;
+        inset: 0 0 0 auto;
+        width: 360px;
+        max-width: 86vw;
+        transform: translateX(100%);
+        background: rgba(255, 255, 255, 0.82);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        box-shadow: -24px 0 48px rgba(0, 0, 0, 0.18);
+        transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.2, 1);
+        z-index: 40;
+        border-left: 6px solid var(--accent);
+      }
+      .drawer.open {
+        transform: translateX(0);
+      }
+      .drawer-body {
+        padding: 24px 20px 48px;
+      }
+      .drawer-close {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        font-size: 28px;
+        line-height: 1;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        color: #333;
+      }
+
+      /* 어두운 스크림 */
+      .drawer-scrim {
+        position: fixed;
+        inset: 0;
+        background: rgba(187, 187, 187, 0.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 35;
+      }
+      .drawer-scrim.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      @keyframes pulseBounce {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 10px 5px rgba(255, 255, 255, 1),
+            0 0 10px 30px rgba(255, 255, 255, 0.75),
+            0 0 10px 60px rgba(255, 216, 145, 0.75),
+            0 0 10px 90px rgba(255, 216, 145, 0.8);
+        }
+        40% {
+          transform: scale(1.08);
+          box-shadow: 0 0 15px 10px rgba(255, 255, 255, 1),
+            0 0 25px 50px rgba(255, 255, 255, 0.75),
+            0 0 20px 80px rgba(255, 216, 145, 0.75),
+            0 0 20px 110px rgba(255, 216, 145, 0.8);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .overlay.bounce::after {
+        animation: pulseBounce 0.7s ease-out;
+      }
+
+      @keyframes rippleWave {
+        0% {
+          transform: scale(0.3);
+          opacity: 0.9;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.4;
+        }
+        100% {
+          transform: scale(1.8);
+          opacity: 0;
+        }
+      }
+
+      .ripple {
+        position: fixed;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.9) 0%,
+          rgba(255, 216, 145, 0.3) 40%,
+          transparent 80%
+        );
+        pointer-events: none;
+        transform: scale(0);
+        animation: rippleWave 1.2s ease-out forwards;
+        z-index: 9;
+      }
+
+      /* =====================================
+  ▼▼▼ 모바일 반응형 코드 (여기부터 추가) ▼▼▼
+  =====================================
+  */
+      @media (max-width: 768px) {
+        :root {
+          --r: 150px; /* 스포트라이트 크기 줄이기 */
+        }
+
+        .under {
+          padding: 0 1.5rem; /* 20vw 패딩 제거 */
+          padding-top: 15vh; /* 콘텐츠 너무 붙지 않게 */
+          padding-bottom: 15vh;
+        }
+
+        .overlay {
+          padding-left: 1.5rem; /* 20vw 패딩 제거 */
+        }
+
+        .under-row {
+          flex-direction: column; /* 세로 쌓기 */
+          gap: 4vh;
+          align-items: flex-start;
+        }
+
+        .under-logo {
+          transform: translateY(0); /* y축 이동 리셋 */
+          gap: 4vh;
+        }
+        .overlay-logo {
+          gap: 4vh;
+          transform: translateY(-10vh);
+        }
+
+        /* 로고 원 크기 줄이기 */
+        .under-dot,
+        .overlay-dot {
+          width: 50px;
+          height: 50px;
+        }
+
+        /* 로고 원 트레일 간격 줄이기 */
+        .under-dot::before,
+        .overlay-dot::before {
+          transform: translateX(-15px);
+        }
+        .under-dot::after,
+        .overlay-dot::after {
+          transform: translateX(-30px);
+        }
+
+        /* 로고 텍스트 */
+        .under-word,
+        .overlay-word {
+          font-size: 40px;
+          line-height: 1; /* 세로 정렬 맞추기 */
+          transform: translateY(0);
+        }
+
+        /* 본문 텍스트 */
+        .under-text h1 {
+          font-size: 20px;
+        }
+        .under-text p {
+          margin-top: 30px;
+          font-size: 14px;
+          max-width: 100%;
+        }
+
+        /* 아래쪽 컨텐츠 섹션 */
+        .section {
+          margin: 4rem auto;
+          padding: 0 1rem;
+        }
+        .section-title {
+          top: -60px;
+          left: 1rem;
+          font-size: 18px;
+        }
+
+        /* 그리드 세로 쌓기 */
+        .grid--two,
+        .grid--split {
+          grid-template-columns: 1fr;
+        }
+        .card {
+          aspect-ratio: 16 / 9;
+        }
+        .card--lg {
+          aspect-ratio: 1 / 1;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="spot spot-lead"></div>
+
+    <div class="overlay" id="overlay">
+      <div class="overlay-logo">
+        <span class="overlay-dot"></span>
+        <span class="overlay-word">MOTION</span>
+      </div>
+      <div class="spot spot-trail1"></div>
+      <div class="spot spot-trail2"></div>
+    </div>
+
+    <main class="under">
+      <div class="under-row">
+        <div class="under-logo">
+          <span class="under-dot"></span>
+          <span class="under-word">MOTION</span>
+        </div>
+
+        <div class="under-text">
+          <h1>
+            <mark>움직임</mark>으로 에너지를 만들고, 놀이로 세상을 배우다<span
+              style="color: #ffd891"
+              >!</span
+            >
+          </h1>
+          <p>
+            아이들에게 익숙한 놀이의 동작이 곧 에너지를 만들어내는 힘이
+            됩니다.<br />
+            몸을 움직이는 즐거움 속에서 아이들은 스스로 에너지의 원리를 배우고
+            탐구합니다.
+          </p>
+        </div>
+      </div>
+    </main>
+    <aside class="drawer" id="sideDrawer" aria-hidden="true">
+      <button class="drawer-close" id="drawerClose" aria-label="Close">
+        ×
+      </button>
+      <div class="drawer-body">
+        <h3>Process Archive</h3>
+        <p>여기에 섹션별 컨텐츠, 링크, 이미지 등을 넣으면 돼.</p>
+      </div>
+    </aside>
+
+    <div class="drawer-scrim" id="drawerScrim"></div>
+
+    <script>
+      const root = document.documentElement;
+      const overlay = document.querySelector(".overlay");
+
+      function setPos(x, y) {
+        root.style.setProperty("--mx", x + "px");
+        root.style.setProperty("--my", y + "px");
+      }
+
+      setPos(window.innerWidth / 2, window.innerHeight / 2);
+
+      window.addEventListener(
+        "mousemove",
+        (e) => {
+          setPos(e.clientX, e.clientY);
+        },
+        { passive: true }
+      );
+      // 모바일 터치 이동
+      window.addEventListener(
+        "touchmove",
+        (e) => {
+          const t = e.touches[0];
+          if (t) setPos(t.clientX, t.clientY);
+        },
+        { passive: true }
+      );
+
+      // [삭제] 이 블록에 있던 touchmove 리스너를 삭제했습니다. (마지막 스크립트와 통합)
+    </script>
+
+    <script>
+      // --- IntersectionObserver 스크립트 ---
+      /*
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+            } else {
+              entry.target.classList.remove("is-visible");
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      // .revealable 요소가 없어서 주석 처리 (오류 방지)
+      // document.querySelectorAll('.revealable').forEach(el => io.observe(el));
+    </script>
+    <script>
+      // --- 클릭 리플 효과 스크립트 ---
+      document.addEventListener("click", (e) => {
+        const count = 3;
+        const delay = 150;
+
+        for (let i = 0; i < count; i++) {
+          const ripple = document.createElement("div");
+          ripple.className = "ripple";
+
+          const size = 200 + i * 60;
+          ripple.style.width = `${size}px`;
+          ripple.style.height = `${size}px`;
+          ripple.style.left = `${e.clientX - size / 2}px`;
+          ripple.style.top = `${e.clientY - size / 2}px`;
+          ripple.style.animationDelay = `${i * delay}ms`;
+
+          document.body.appendChild(ripple);
+          ripple.addEventListener("animationend", () => ripple.remove());
+        }
+      });
+    </script>
+
+    <script>
+      // --- 스포트라이트 추종 스크립트 ---
+      let targetX = innerWidth / 2,
+        targetY = innerHeight / 2;
+      const lead = { x: targetX, y: targetY };
+      const t1 = { x: targetX - 24, y: targetY };
+      const t2 = { x: targetX - 48, y: targetY };
+
+      const elT1 = document.querySelector(".spot-trail1");
+      const elT2 = document.querySelector(".spot-trail2");
+
+      addEventListener(
+        "mousemove",
+        (e) => {
+          targetX = e.clientX;
+          targetY = e.clientY;
+        },
+        { passive: true }
+      );
+
+      // 📱 모바일 터치 이동
+      addEventListener(
+        "touchmove",
+        (e) => {
+          const t = e.touches[0];
+          if (!t) return;
+          targetX = t.clientX;
+          targetY = t.clientY;
+        },
+        { passive: true }
+      );
+      // [삭제] 이 블록에 있던 touchmove 리스너를 삭제했습니다. (마지막 스크립트와 통합)
+
+      function setMaskCenter(x, y) {
+        // root는 이미 이전 스크립트에서 선언됨
+        root.style.setProperty("--mx", x + "px");
+        root.style.setProperty("--my", y + "px");
+      }
+
+      const lerp = (a, b, t) => a + (b - a) * t;
+
+      function animate() {
+        lead.x = lerp(lead.x, targetX, 0.25);
+        lead.y = lerp(lead.y, targetY, 0.25);
+        setMaskCenter(lead.x, lead.y);
+
+        t1.x = lerp(t1.x, lead.x - 24, 0.18);
+        t1.y = lerp(t1.y, lead.y, 0.18);
+
+        t2.x = lerp(t2.x, t1.x - 24, 0.14);
+        t2.y = lerp(t2.y, t1.y, 0.14);
+
+        const r =
+          parseFloat(getComputedStyle(root).getPropertyValue("--r")) || 250;
+        if (elT1)
+          elT1.style.transform = `translate(${t1.x - r}px, ${t1.y - r}px)`;
+        if (elT2)
+          elT2.style.transform = `translate(${t2.x - r}px, ${t2.y - r}px)`;
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+    </script>
+
+    <script>
+      /* =============================
+ 🚫 스크롤 완전 차단
+============================= */
+      window.addEventListener("wheel", (e) => e.preventDefault(), {
+        passive: false,
+      });
+      window.addEventListener("scroll", () => window.scrollTo(0, 0));
+      window.addEventListener("touchmove", (e) => e.preventDefault(), {
+        passive: false,
+      });
+
+      /* =============================
+ 📱 스와이프 / 💻 스크롤로 페이지 전환
+============================= */
+      let isNavigating = false;
+      let touchStartY = 0;
+      let touchEndY = 0;
+
+      // 페이지 이동 함수
+      function navigate() {
+        if (isNavigating) return;
+        isNavigating = true;
+        document.body.classList.add("page-fading-out");
+        setTimeout(() => {
+          window.location.href = "move_2.html";
+        }, 800);
+      }
+      //
+      // 💻 데스크탑: 마우스 휠 아래로
+      window.addEventListener(
+        "wheel",
+        (e) => {
+          if (e.deltaY > 0 && !isNavigating) navigate();
+        },
+        { passive: false }
+      );
+
+      // 📱 모바일: 위로 스와이프
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        window.addEventListener(
+          "touchstart",
+          (e) => {
+            touchStartY = e.touches[0].clientY;
+          },
+          { passive: true }
+        );
+
+        window.addEventListener(
+          "touchend",
+          (e) => {
+            touchEndY = e.changedTouches[0].clientY;
+            const deltaY = touchStartY - touchEndY;
+            if (deltaY > 100 && !isNavigating) {
+              // 위로 100px 이상 스와이프 시
+              navigate();
+            }
+          },
+          { passive: true }
+        );
+      }
+
+      // 🔁 뒤로가기 시 페이드 효과 복원
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+          isNavigating = false;
+          document.body.classList.remove("page-fading-out");
+        }
+      });
+    </script>
+  </body>
+</html>
